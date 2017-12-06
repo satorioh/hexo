@@ -80,3 +80,6 @@ deploy:
   type: git
   repo: git@github.com:satorioh/satorioh.github.io.git
   branch: master
+
+sitemap:
+  path: sitemap.xml
