@@ -52,3 +52,4 @@ permalink: 2017-year-end-summary
 18. 外公助听器
 19. 转行
 20. 生娃
+21. 练打字
