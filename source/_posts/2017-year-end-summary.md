@@ -53,3 +53,4 @@ permalink: 2017-year-end-summary
 19. 转行
 20. 生娃
 21. 练打字
+22. 尝试增加收入
