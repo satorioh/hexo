@@ -143,6 +143,35 @@ if (document.body.clientHeight && document.documentElement.clientHeight) {
 var scrollBarWidth = el.offsetWidth - el.clientWidth;
 ```
 
+### 7.页面滚动离开首屏(这时可显示回到顶部的按钮)
+```javascript
+document.body.scrollTop > window.innerHeight
+```
+
+### 8.图片懒加载判断
+```javascript
+function lazyload() {
+	    var images = document.getElementsByTagName('img');
+	    var len    = images.length;
+	    var n      = 0;      //存储图片加载到的位置，避免每次都从第一张图片开始遍历		
+	    return function() {
+		var seeHeight = document.documentElement.clientHeight;
+		var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		for(var i = n; i < len; i++) {
+		    if(images[i].offsetTop < seeHeight + scrollTop) {
+		        if(images[i].getAttribute('src') === 'images/loading.gif') {
+			     images[i].src = images[i].getAttribute('data-src');
+			}
+			n = n + 1;
+		     }
+		}
+	    }
+	}
+	var loadImages = lazyload();
+	loadImages();          //初始化首页的页面图片
+	window.addEventListener('scroll', loadImages, false);
+```
+
  参考链接：
 
  [JavaScript 及 jQuery 中的各种宽高属性图解](https://juejin.im/entry/58523bf8128fe1006d9990ee)
