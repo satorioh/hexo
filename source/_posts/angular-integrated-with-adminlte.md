@@ -55,6 +55,28 @@ permalink: angular-integrated-with-adminlte
 
 10.依据页面情况，调整缺失图片的相关路径即可
 
+11.创建各部分组件，将对应内容分配到组件中，如下（app.component.html）
+```html
+<div class="wrapper">
+
+  <!-- Main Header -->
+  <app-header></app-header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <app-menu></app-menu>
+
+  <!-- Content Wrapper. Contains page content -->
+  <app-content></app-content>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <app-footer></app-footer>
+
+  <!-- Control Sidebar -->
+  <app-sidebar></app-sidebar>
+</div>
+
+```
+
 参考链接：
 
 [ANGULAR 4 Admin LTE Theme Integration Advanced](https://www.youtube.com/watch?v=4YRVuRN5k04)
