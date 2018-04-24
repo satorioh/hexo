@@ -214,3 +214,6 @@ export class ContentComponent implements OnInit {
 
 }
 ```
+
+参考链接：
+[Angular2 路由](http://www.xinxiaoyang.com/programming/2017-11-30-angular-router/)

@@ -1,11 +1,11 @@
 ---
-title: 【Angular】服务归纳
+title: 【Angular】依赖注入归纳
 date: 2018-04-24 14:46:28
 categories: Angular
 tags:
 - angular
 - 前端
-permalink: angular-service-summary
+permalink: angular-dependency-injection-summary
 ---
 ### 一、基本配置
 #### 1.创建服务并在根模块注册
