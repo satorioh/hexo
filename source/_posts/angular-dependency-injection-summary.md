@@ -11,7 +11,7 @@ permalink: angular-dependency-injection-summary
 #### 1.创建服务并在根模块注册
 `ng g service stock-info`
 `providers: [StockInfoService]`
-
+<!--more-->
 #### 2.配置服务类逻辑
 ```typescript
 import { Injectable } from '@angular/core';
