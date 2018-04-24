@@ -48,3 +48,25 @@ export class AppComponent implements OnInit {
 - 服务是否可注入，取决于其是否在根模块的providers中声明
 - 而@Injectable修饰符表示其他的组件或服务，可以注入到此服务
 - 一般优先在根模块中声明，这样对模块包含的所有组件都可见；在组件中声明的话，则只对该组件及其子组件可见
+
+### 二、使用类、工厂方式、值，声明提供器
+```typescript
+providers: [
+    {provide: StockService, useFactory:
+      (logger: LoggerService, isDev) => {
+      console.log(isDev);
+
+      if(isDev) {
+        return new StockService(logger);
+      }else{
+        return new AnotherStockService(logger);
+      }
+    }, deps: [LoggerService, "IS_DEV_ENV"]}
+    , LoggerService,
+    {provide: "IS_DEV_ENV", useValue: {isDev: true}}],
+```
+说明：
+- 类声明：`providers:[ProductService]`等价于`providers:[{provide:ProductService, useClass:ProductService}]`
+- useFactory:使用工厂方法
+- useValue:使用值或变量声明，值或变量必须在之前已存在
+- deps中的内容，对应useFactory方法的参数
