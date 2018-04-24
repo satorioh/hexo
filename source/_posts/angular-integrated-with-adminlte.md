@@ -3,7 +3,7 @@ title: 【Angular】Angular 5 整合 AdminLTE 2.4.3
 date: 2018-04-20 08:33:44
 categories: Angular
 tags:
-- js
+- angular
 - 前端
 permalink: angular-integrated-with-adminlte
 ---

@@ -3,7 +3,7 @@ title: 【Angular】路由传参
 date: 2018-04-23 11:27:29
 categories: Angular
 tags:
-- js
+- angular
 - 前端
 permalink: angular-routing-params
 ---

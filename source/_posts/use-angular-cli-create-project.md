@@ -4,6 +4,7 @@ date: 2017-07-10 17:31:46
 categories: Angular
 tags:
 - angular
+- 前端
 permalink: use-angular-cli-create-project
 ---
 ### 一、安装[nvm-windows](https://github.com/coreybutler/nvm-windows/releases "nvm-windows")，方便node版本切换

@@ -3,7 +3,7 @@ title: 【Angular】路由归纳
 date: 2018-04-24 08:55:27
 categories: Angular
 tags:
-- js
+- angular
 - 前端
 permalink: angular-routing-summary
 ---
