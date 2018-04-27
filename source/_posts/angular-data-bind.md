@@ -20,11 +20,11 @@ permalink: angular-data-bind
 
 #### 2.CSS类绑定
 
-| 动态效果   | 代码                                                                |
-|:---------|:-------------------------------------------------------------------|
-| 全部替换   | `<div class="aaa bbb" [class]="someVarible">`                      |
-| 增加一个类 | `<div [class.ccc]="isDev" >`                                       |
-| 增加多个类 | `<div [ngClass]="obj" > ` //obj = {aaa:true, bbb:false, ccc:false} |
+| 动态效果       | 代码                                                               |
+|:-------------|:-------------------------------------------------------------------|
+| 全部替换       | `<div class="aaa bbb" [class]="someVarible">`                      |
+| 增加/删除一个类 | `<div [class.ccc]="isDev" >`                                       |
+| 增加/删除多个类    | `<div [ngClass]="obj" > ` //obj = {aaa:true, bbb:false, ccc:false} |
 
 #### 3.样式绑定
 
