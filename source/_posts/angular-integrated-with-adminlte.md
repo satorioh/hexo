@@ -7,36 +7,32 @@ tags:
 - 前端
 permalink: angular-integrated-with-adminlte
 ---
-1.下载 [Admin LTE](https://github.com/almasaeed2010/AdminLTE/releases)，并解压到本地
+~~1.下载 [Admin LTE](https://github.com/almasaeed2010/AdminLTE/releases)，并解压到本地~~
 
-2.将解压所得的三个文件夹：bower_components、dist、plugins，拷贝至ng目录的src/assets下
+~~2.将解压所得的三个文件夹：bower_components、dist、plugins，拷贝至ng目录的src/assets下~~
+
+**更新（2018/05/18）：原方法会造成ng serve缓慢，并在build后，在assets文件夹下产生大量文件，不利于部署**
+1.分别npm install bootstrap/jQuery/adminlte三个依赖包
 <!--more-->
 3.用编辑器打开admin LTE解压文件夹内的index2.html
 
 4.拷贝引用的css内容至ng目录下angular-cli.json的styles内，同时修改为正确的路径，如下：
 ```json
 "styles": [
-        "styles.css",
-        "assets/bower_components/bootstrap/dist/css/bootstrap.min.css",
-        "assets/bower_components/font-awesome/css/font-awesome.min.css",
-        "assets/bower_components/Ionicons/css/ionicons.min.css",
-        "assets/bower_components/jvectormap/jquery-jvectormap.css",
-        "assets/dist/css/AdminLTE.min.css",
-        "assets/dist/css/skins/_all-skins.min.css"
+                "styles.css",
+                "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+                "../node_modules/font-awesome/css/font-awesome.min.css",
+                "../node_modules/adminlte/dist/css/AdminLTE.min.css",
+                "../node_modules/adminlte/dist/css/skins/_all-skins.min.css"
       ],
 ```
 5.拷贝index2.html内的js引用，至angular-cli.json的scripts内（可根据用到的功能自行增删），同时修改为正确的路径，如下：
 ```json
 "scripts": [
-        "assets/bower_components/jquery/dist/jquery.min.js",
-        "assets/bower_components/bootstrap/dist/js/bootstrap.min.js",
-        "assets/bower_components/fastclick/lib/fastclick.js",
-        "assets/dist/js/adminlte.min.js",
-        "assets/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js",
-        "assets/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js",
-        "assets/plugins/jvectormap/jquery-jvectormap-world-mill-en.js",
-        "assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
-        "assets/bower_components/chart.js/Chart.js"
+    "../node_modules/jquery/dist/jquery.min.js",
+    "../node_modules/bootstrap/dist/js/bootstrap.min.js",
+    "../node_modules/fastclick/lib/fastclick.js",
+    "../node_modules/adminlte/dist/js/adminlte.min.js"
       ],
 ```
 
