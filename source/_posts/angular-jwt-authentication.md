@@ -221,6 +221,8 @@ php composer-setup.php
 
 ##### (3)将composer.phar拷贝至项目相关目录下，比如test/backend，运行`composer.phar require lcobucci/jwt`，这里将安装lcobucci/jwt
 
+更新（2018/05/21）: ubuntu可以直接运行`sudo apt-get install composer`来安装，然后在php文件相关目录下安装jwt`sudo composer require lcobucci/jwt`
+
 #### 7.配置php授权服务器
 用于获取用户发来的工号、密码信息，并与MySQL比对后，生成jwt返回客户端
 ```php
