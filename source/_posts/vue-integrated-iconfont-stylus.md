@@ -51,6 +51,7 @@ resolve: {
     }
   }
 ```
+##### (5)修改完后，需重启server，然后`npm run dev`
 
 ##### （4）在模板样式中引入varibles.styl，然后使用变量
 ```css
