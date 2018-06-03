@@ -67,3 +67,31 @@ export default new Vuex.Store({
   }
 })
 ```
+
+#### 四、优化拆分store/index.js
+在store文件夹下分别新增state.js、actions.js、mutations.js，将index.js分拆
+
+以actions.js为例:
+```js
+export default {
+  changeCity (ctx, city) {
+    ctx.commit('changeCity', city)
+  }
+}
+```
+
+index.js:
+```js
+import Vue from 'vue'
+import Vuex from 'vuex'
+import state from './state'
+import actions from './actions'
+import mutations from './mutation'
+
+Vue.use(Vuex)
+export default new Vuex.Store({
+  state,
+  actions,
+  mutations
+})
+```
