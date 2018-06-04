@@ -8,7 +8,7 @@ tags:
 permalink: js-data-type-detection
 ---
 ### JS中的数据类型
-5种基本数据类型：Number、String、Boolean、Null、Undefined
+5种基本数据类型：Number、String、Boolean、Null、Undefined、Symbol
 
 1种复杂数据类型：Object（Array、Function、Reg、Date...）<!--more-->
 
@@ -16,7 +16,7 @@ permalink: js-data-type-detection
 
 语法：`typeof num;`
 
-结果：Number/String/Boolean/Undefined/Function正常，null/Array/Reg/Date-->Object
+结果：Number/String/Boolean/Undefined/Function/Symbol正常，null/Array/Reg/Date-->Object
 
 **2.instanceof**
 
