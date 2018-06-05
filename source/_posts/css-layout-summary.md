@@ -134,7 +134,29 @@ p{
 - 优点：居中元素不会对其他的产生影响
 - 缺点：transform属于css3内容，兼容性存在一定问题，高版本浏览器需要添加一些前缀
 
-#### （3）flex + align-items
+#### （3）absolute + margin:auto
+- 父元素：块
+- 子元素：块
+```html
+<div class="parent">
+    <div class="child>DEMO</div>
+</div>
+
+.parent {
+    position:relative;
+}
+.child {
+    position:absolute;
+    width: 100px;
+    height: 100px;
+    top:0;
+    bottom:0;
+    margin:auto;
+}
+```
+- 优点：兼容性好
+
+#### （4）flex + align-items
 - 父元素：块
 ```html
 <div class="parent">
@@ -149,7 +171,7 @@ p{
 - 优点：只设置parent
 - 缺点：兼容性问题
 
-#### （4）line-height法
+#### （5）line-height法
 - 父元素：块，定高
 - 子元素：单行的button、图片或者文本
 ```html
@@ -160,7 +182,7 @@ p{
 }
 ```
 
-#### （5）多行文本垂直居中
+#### （6）多行文本垂直居中
 - 父元素：块
 - 子元素：行
 ```html
@@ -216,6 +238,27 @@ p{
     display:flex;
     justify-content:center;
     align-items:center;
+}
+```
+
+#### （4）absolute + margin:auto
+```html
+<div class="parent">
+    <div class="child>DEMO</div>
+</div>
+
+.parent {
+    position:relative;
+}
+.child {
+    position:absolute;
+    width: 100px;
+    height: 100px;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
 }
 ```
 
