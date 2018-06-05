@@ -54,3 +54,17 @@ activated () {
     }
   }
 ```
+
+#### 四、排除某些组件
+使用exclude标签，来排除某个组件，不缓存，这样mounted钩子也可以正常使用。
+
+app.vue:
+```vue
+<template>
+  <div id="app">
+    <keep-alive exclude="Detail">
+      <router-view/>
+    </keep-alive>
+  </div>
+</template>
+```
