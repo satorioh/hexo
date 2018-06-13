@@ -1,7 +1,7 @@
 ---
-title: 【VUE】使用Cordova打包Vue webapp
+title: 【Vue】使用Cordova打包Vue webapp
 date: 2018-06-07 15:44:34
-categories: VUE
+categories: Vue
 tags:
 - vue
 - 前端

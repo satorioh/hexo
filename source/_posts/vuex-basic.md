@@ -1,7 +1,7 @@
 ---
-title: 【VUE】Vuex的基本使用
+title: 【Vue】Vuex的基本使用
 date: 2018-06-03 14:29:59
-categories: VUE
+categories: Vue
 tags:
 - vue
 - 前端

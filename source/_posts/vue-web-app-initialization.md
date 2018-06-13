@@ -1,7 +1,7 @@
 ---
-title: 【VUE】移动端项目初始化
+title: 【Vue】移动端项目初始化
 date: 2018-05-29 14:29:18
-categories: VUE
+categories: Vue
 tags:
 - vue
 - 前端

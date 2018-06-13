@@ -1,7 +1,7 @@
 ---
-title: 【VUE】配合模拟数据实现前后端、父子组件间通信
+title: 【Vue】配合模拟数据实现前后端、父子组件间通信
 date: 2018-05-31 16:42:51
-categories: VUE
+categories: Vue
 tags:
 - vue
 - 前端
