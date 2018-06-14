@@ -13,7 +13,7 @@ permalink: vue-vw-layout
 #### 二、安装并配置PostCss插件
 1.安装
 ```shell
-npm i postcss-aspect-ratio-mini postcss-px-to-viewport postcss-write-svg postcss-cssnext postcss-viewport-units cssnano --S
+npm i postcss-aspect-ratio-mini postcss-px-to-viewport postcss-write-svg postcss-cssnext postcss-viewport-units cssnano cssnano-preset-advanced --save-dev
 ```
 
 2.配置PostCss插件
