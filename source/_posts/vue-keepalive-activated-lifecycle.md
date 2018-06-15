@@ -1,7 +1,7 @@
 ---
 title: 【Vue】keep-alive性能优化与activated生命周期钩子
 date: 2018-06-03 16:27:29
-categories: Vue
+categories: VUE
 tags:
 - vue
 - 前端

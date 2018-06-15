@@ -1,7 +1,7 @@
 ---
 title: 【Vue】使用iconfont和stylus
 date: 2018-05-29 16:50:52
-categories: Vue
+categories: VUE
 tags:
 - vue
 - 前端

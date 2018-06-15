@@ -1,7 +1,7 @@
 ---
 title: 【Vue】递归组件
 date: 2018-06-05 16:14:17
-categories: Vue
+categories: VUE
 tags:
 - vue
 - 前端

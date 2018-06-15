@@ -1,7 +1,7 @@
 ---
 title: 【Vue】移动端适配之vw解决方案
 date: 2018-06-13 16:37:21
-categories: Vue
+categories: VUE
 tags:
 - vue
 - 前端
