@@ -246,3 +246,10 @@ function exitFullscreen() {
     }  
 }
 ```
+
+#### 19.检测变量是否是对象
+```javascript
+function isObject(x) {
+    return Object.prototype.toString.call(x) === '[object Object]';
+}
+```
