@@ -43,7 +43,8 @@ if (!isObject(source)) return source; //如果不是对象的话直接返回
 }
 
 function isObject(x) {
-    return Object.prototype.toString.call(x) === '[object Object]';
+    let type =  Object.prototype.toString.call(x).slice(8, -1);
+    return type === 'Object' || type === 'Array'
 }
 ```
 
