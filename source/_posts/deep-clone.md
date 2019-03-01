@@ -42,9 +42,8 @@ if (!isObject(source)) return source; //如果不是对象的话直接返回
     return target
 }
 
-function isObject(x) {
-    let type =  Object.prototype.toString.call(x).slice(8, -1);
-    return type === 'Object' || type === 'Array'
+function isObject(obj) {
+    return typeof obj === 'object' && obj !== null
 }
 ```
 
@@ -114,3 +113,5 @@ function cloneLoop(x) {
 [一篇文章彻底说清JS的深拷贝/浅拷贝](https://segmentfault.com/a/1190000012828382)
 
 [浅拷贝与深拷贝](https://github.com/ljianshu/blog/issues/5)
+
+[面试题：如何实现一个深拷贝](https://juejin.im/post/5c45112e6fb9a04a027aa8fe)
