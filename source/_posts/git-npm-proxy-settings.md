@@ -37,3 +37,21 @@ npm config list
 npm config set proxy=http://localhost:1080
 npm config set https-proxy=http://localhost:1080
 ```
+
+##### 3.取消设置
+```shell
+npm config delete proxy
+npm config delete https-proxy
+```
+
+### 三、使用nrm
+```shell
+//1.先安装nrm工具
+npm install -g nrm
+
+//2.查看当前可用的镜像源
+nrm ls
+
+//3.切换npm源
+nrm use 镜像源名称
+```
