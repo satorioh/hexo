@@ -253,3 +253,54 @@ function isObject(x) {
     return Object.prototype.toString.call(x) === '[object Object]';
 }
 ```
+
+#### 20.模拟sleep
+```javascript
+function sleep(milliSeconds) { // 毫秒
+    const startTime = new Date().getTime();
+    while (new Date().getTime() < startTime + milliSeconds);
+}
+```
+
+#### 21.使用Blob实现点击下载
+```javascript
+function saveBlobFile(name, type, data) {
+    if (data !== null && navigator.msSaveBlob) return navigator.msSaveBlob(new Blob([data], { type: type }), name);
+    let a = $("<a style='display: none;'/>");
+    let url = window.URL.createObjectURL(new Blob([data], { type: type }));
+    a.attr('href', url);
+    a.attr('download', name);
+    $('body').append(a);
+    a[0].click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+}
+```
+
+#### 22.等待某个dom加载后修改内容
+```javascript
+function setLoadableTip(tip) {
+    let timer = setInterval(() => {
+        let $loadingText = $('.hr1-loading-text');
+        if ($loadingText.length > 0) {
+            $loadingText.text(i18next.t(tip));
+            clearInterval(timer);
+        }
+    }, 100);
+}
+```
+
+#### 23.银行卡号隐藏
+```javascript
+function formatBankAccount(account) {
+    const pattern = /^(\d{4})(\d{4})+(\d+)$/;
+    return account.replace(pattern, '$1 **** **** $3');
+}
+```
+
+#### 24.字符串补足到指定长度
+```javascript
+function rightPad(str, targetLength, padChar) {
+    return str + Array(targetLength - str.length + 1).join(padChar);
+}
+```
