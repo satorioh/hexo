@@ -42,7 +42,7 @@ cipherText XOR key // plainText
 - **密钥长度**：AES支持的密钥长度可以是128 bits、192 bits或256 bits。密钥的长度不同，推荐加密轮数也不同，如下表：
 ![密钥长度与加密轮数](../images/aes2.png)
 加密轮数越多，当然安全性越好，但也更耗费时间
-- **加密模式**：分组加密有多种[工作模式](https://zh.wikipedia.org/wiki/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F)，它是一项增强密码算法或者使算法适应具体应用的技术，常见的工作模式如下图：
+- **加密模式**：因为分组加密只能加密固定长度的分组，而实际需要加密的明文可能超过分组长度，此时就要对分组密码算法进行迭代，以完成整个明文加密，迭代的方法就是加密模式。它有[很多种](https://zh.wikipedia.org/wiki/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F)，常见的工作模式如下图：
 ![工作模式](../images/aes3.png)
 - **初始向量(IV，Initialization Vector)**：它的作用和MD5的“加盐”有些类似，目的是防止同样的明文块，始终加密成同样的密文块，以CBC模式为例：
 ![初始向量](../images/aes4.png)
@@ -57,14 +57,14 @@ cipherText XOR key // plainText
 
 #### 1.CTR(Counter Mode，计数器模式)
 ![CTR](../images/ctr1.png)
-图中可以看出，加密过程使用了密钥、Nonce(类似IV)、Counter(一个从0到n的编号)，与上文提及的CBC模式相比，CTR最大的优势是可以并行执行，因为所有的块只依赖于Nonce与Counter，并不会依赖于前一个密文块，适合高速传输需求。但CTR不能提供密文消息完整性校验的功能(未被篡改)，所以我们需要引入另一个概念：MAC(消息验证码)
+图中可以看出，加密过程使用了密钥、Nonce(类似IV)、Counter(一个从0到n的编号)，与上文提及的CBC模式相比，CTR最大的优势是可以并行执行，因为所有的块只依赖于Nonce与Counter，并不会依赖于前一个密文块，适合高速传输需求。但CTR不能提供密文消息完整性校验的功能(未被篡改)，所以我们需要引入另一个概念：MAC(消息认证码)
 
-#### 2.MAC(Message Authentication Code, 消息验证码)
-是经过特定算法后产生的一小段信息，可以用来检查在消息传递过程中，其内容是否被篡改过
+#### 2.MAC(Message Authentication Code, 消息认证码)
+是一种用来确认消息完整性并进行认证的技术。通过输入消息与共享密钥，可以生成一段固定长度的数据(MAC值)
 ![MAC](../images/mac.png)
-收发双方需要提前共享一个密钥，发送者使用密钥生成消息的MAC值，并随消息一起发送，接收者通过共享密钥计算收到消息的MAC值，与随附的MAC值做比较，从而判断消息是否被改过，对于篡改者，篡改消息后，由于没有密钥，也就无法计算出篡改后的消息的MAC值，从而保证了消息的完整性
+收发双方需要提前共享一个密钥，发送者使用密钥生成消息的MAC值，并随消息一起发送，接收者通过共享密钥计算收到消息的MAC值，与随附的MAC值做比较，从而判断消息是否被改过(完整性)，对于篡改者，由于没有密钥(认证)，也就无法对篡改后的消息计算MAC值
 
-#### 3.GMAC (Galois message authentication code mode, 伽罗华消息验证码)
+#### 3.GMAC (Galois message authentication code mode, 伽罗华消息认证码)
 GMAC就是利用伽罗华域(Galois Field，GF，有限域)乘法运算来计算消息的MAC值
 
 #### 4.[GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode)(Galois/Counter Mode)
