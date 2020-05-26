@@ -18,7 +18,7 @@ permalink: browser-event-loop
 - 举例：setTimeout、setInterval
 
 ##### 2.微任务(Microtask)
-- 特点：在当次loop的结尾立刻执行；当存在宏任务时，优先执行微任务
+- 特点：在当次loop的结尾立刻执行；执行并清空微任务队列，如果在微任务的执行中又加入了新的微任务，会一起执行；当存在宏任务时，优先执行微任务
 - 举例：Promise.then()
 
 ##### 3.Animation callbacks

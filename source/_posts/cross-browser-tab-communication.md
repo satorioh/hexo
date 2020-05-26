@@ -1,7 +1,7 @@
 ---
 title: 跨tab页通信(同源/跨域)
 date: 2020-05-21 17:34:37
-categories: Javascript
+categories: JavaScript
 tags:
 - 跨域
 - tab
