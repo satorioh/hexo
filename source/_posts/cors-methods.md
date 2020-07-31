@@ -1,7 +1,7 @@
 ---
 title: 【JS】解决跨域的几种方法
 date: 2018-06-15 14:18:36
-categories: CORS
+categories: 跨域
 tags:
 - js
 - 前端

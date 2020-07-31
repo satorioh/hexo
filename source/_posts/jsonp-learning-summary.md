@@ -1,7 +1,7 @@
 ---
 title: 【学习小结】JSONP原理与实现
 date: 2018-01-30 11:22:04
-categories: CORS
+categories: 跨域
 tags:
 - jsonp
 - 跨域
