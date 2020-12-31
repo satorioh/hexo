@@ -120,3 +120,5 @@ Content-Type: text/html; charset=utf-8
 参考链接：
 
 [跨域资源共享 CORS 详解 -- 阮一峰](https://www.ruanyifeng.com/blog/2016/04/cors.html)
+
+[Fetch Living Standard](https://fetch.spec.whatwg.org/)
