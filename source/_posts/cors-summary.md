@@ -116,9 +116,28 @@ Content-Type: text/html; charset=utf-8
 优点：JSONP只支持GET请求，CORS支持所有类型的HTTP请求
 缺点：不支持老式浏览器，不支持CORS的服务器无法使用
 
+#### 五、常见问题
+##### 1.fetch设置mode: no-cors拿不到数据？
+答：fetch设置no-cors依旧受跨域策略限制，只是浏览器不再报错，并且即使后端添加了相关header，也拿不到response
+
+##### 2.前端跨域请求设置cookie后，报cors错误？
+答：需要同时满足如下三个条件(后端Set-Cookie也是)：
+- 后端Response header 有 Access-Control-Allow-Credentials: true
+- 后端Response header的Access-Control-Allow-Origin不能是*，要明确指定
+- 前端fetch 加上 credentials: 'include'
+
+##### 3.无法获取跨域请求中设置的自定义header？
+答：后端需要带上Access-Control-Expose-Headers这个字段
+
+##### 4.使用PUT(非简单请求)报错？
+答：如果前端要使用GET、HEAD以及POST以外的HTTP method发送请求的话，后端的preflight response header必须有Access-Control-Allow-Methods并且指定合法的method，preflight才会通过，浏览器才会把真正的request发送出去
+
+
 
 参考链接：
 
 [跨域资源共享 CORS 详解 -- 阮一峰](https://www.ruanyifeng.com/blog/2016/04/cors.html)
+
+[CORS 完全手册之CORS 详解](https://mp.weixin.qq.com/s/y8e1HLNzbLLYWSeMnT-xSA)
 
 [Fetch Living Standard](https://fetch.spec.whatwg.org/)
