@@ -172,3 +172,5 @@ b.配置
 参考文章：
 
 - [Babel教程](https://www.jiangruitao.com/babel/)
+- [不容错过的 Babel7 知识](https://juejin.cn/post/6844904008679686152)
+- [99% 开发者没弄明白的 babel 知识](https://developer.aliyun.com/article/783477)
