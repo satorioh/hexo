@@ -91,6 +91,6 @@ sitemap:
 
 search:
   path: search.xml
-  field: all
-  content: true
-  format: raw
+  field: post
+  format: html
+  limit: 10000
