@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"roubin.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="【JS】offset、scroll、client宽高属性总结">
+<meta property="og:url" content="https://roubin.me/offset-scroll-client/index.html">
+<meta property="og:site_name" content="肉饼博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://roubin.me/images/summary.jpg">
+<meta property="og:image" content="https://roubin.me/images/all.gif">
+<meta property="og:image" content="https://roubin.me/images/innerHeight_outerHeight.png">
+<meta property="og:image" content="https://roubin.me/images/height_availHeight.png">
+<meta property="og:image" content="https://roubin.me/images/screen.png">
+<meta property="og:image" content="https://roubin.me/images/screen_window_body.png">
+<meta property="og:image" content="https://roubin.me/images/clientHeight_clientWidth.png">
+<meta property="og:image" content="https://roubin.me/images/offset.png">
+<meta property="og:image" content="https://roubin.me/images/clientHeight_offsetHeight_scrollHeight.png">
+<meta property="og:image" content="https://roubin.me/images/offsetParent.png">
+<meta property="og:image" content="https://roubin.me/images/scrollHeight.png">
+<meta property="og:image" content="https://roubin.me/images/clientX_pageX.png">
+<meta property="og:image" content="https://roubin.me/images/jquery.png">
+<meta property="article:published_time" content="2018-04-04T00:36:05.000Z">
+<meta property="article:modified_time" content="2020-01-21T06:51:33.854Z">
+<meta property="article:author" content="roubin">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://roubin.me/images/summary.jpg">
+
+<link rel="canonical" href="https://roubin.me/offset-scroll-client/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【JS】offset、scroll、client宽高属性总结 | 肉饼博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b55ece62ebeb2e72a8efe3f8b5b43960";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">肉饼博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Talk is cheap. Show me the code.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://roubin.me/offset-scroll-client/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="roubin">
+      <meta itemprop="description" content="芝兰其室，金石其心<br/>仁义为友，道德为师">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="肉饼博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【JS】offset、scroll、client宽高属性总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-04-04 08:36:05" itemprop="dateCreated datePublished" datetime="2018-04-04T08:36:05+08:00">2018-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-21 14:51:33" itemprop="dateModified" datetime="2020-01-21T14:51:33+08:00">2020-01-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/offset-scroll-client/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="offset-scroll-client/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="../images/summary.jpg" alt="summary.jpg"></p>
+<a id="more"></a>
+<p><img src="../images/all.gif" alt="all.gif"></p>
+<h2 id="一、JS宽高属性"><a href="#一、JS宽高属性" class="headerlink" title="一、JS宽高属性"></a>一、JS宽高属性</h2><h3 id="1-window相关"><a href="#1-window相关" class="headerlink" title="1.window相关"></a>1.window相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">window.innerHeight</td>
+<td align="left">浏览器窗口高度，如果存在水平滚动条，则包括滚动条（不包括标题、工具栏、状态栏）</td>
+</tr>
+<tr>
+<td align="left">window.innerWidth</td>
+<td align="left">浏览器窗口宽度，如果存在垂直滚动条，则包括滚动条（不包括标题、工具栏、状态栏）</td>
+</tr>
+<tr>
+<td align="left">window.outerHeight</td>
+<td align="left">浏览器窗口整个高度，包括窗口标题、工具栏、状态栏等</td>
+</tr>
+<tr>
+<td align="left">window.outerWidth</td>
+<td align="left">浏览器窗口整个宽度，包括侧边栏，窗口镶边和调正窗口大小的边框</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/innerHeight_outerHeight.png" alt="innerHeight_outerHeight.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h3 id="2-window-screen相关"><a href="#2-window-screen相关" class="headerlink" title="2.window.screen相关"></a>2.window.screen相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">window.screen.width</td>
+<td align="left">显示器屏幕的宽度（与分辨率有关）</td>
+</tr>
+<tr>
+<td align="left">window.screen.height</td>
+<td align="left">显示器屏幕的高度（与分辨率有关）</td>
+</tr>
+<tr>
+<td align="left">window.screen.availHeight</td>
+<td align="left">浏览器窗口在屏幕上可占用的垂直空间（桌面高度去掉任务栏高度）</td>
+</tr>
+<tr>
+<td align="left">window.screen.availWidth</td>
+<td align="left">返回浏览器窗口可占用的水平宽度</td>
+</tr>
+<tr>
+<td align="left">window.screenTop</td>
+<td align="left">返回浏览器上边距离屏幕上边界的距离</td>
+</tr>
+<tr>
+<td align="left">window.screenLeft</td>
+<td align="left">返回浏览器左边距离屏幕左边界的距离</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/height_availHeight.png" alt="height_availHeight.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p><img src="../images/screen.png" alt="screen.png"></p>
+<p><img src="../images/screen_window_body.png" alt="screen_window_body.png"></p>
+<h3 id="3-client相关"><a href="#3-client相关" class="headerlink" title="3.client相关"></a>3.client相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">clientHeight</td>
+<td align="left">元素可视区域的高度，包含内边距，但不包括水平滚动条、边框和外边距</td>
+</tr>
+<tr>
+<td align="left">clientWidth</td>
+<td align="left">元素可视区域的宽度，包含内边距，但不包括垂直滚动条、边框和外边距</td>
+</tr>
+<tr>
+<td align="left">clientTop</td>
+<td align="left">元素顶部边框的宽度，等于border-top</td>
+</tr>
+<tr>
+<td align="left">clientLeft</td>
+<td align="left">元素左边边框的宽度，等于border-left</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/clientHeight_clientWidth.png" alt="clientHeight_clientWidth.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h3 id="4-offset相关"><a href="#4-offset相关" class="headerlink" title="4.offset相关"></a>4.offset相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">offsetParent</td>
+<td align="left">返回一个指向最近的包含该元素的已定位元素。如果没有定位的元素，则 offsetParent 为最近的 table元素对象或根元素（标准模式下为 html；怪异模式下为 body）。当元素的 style.display设置为 none 或定位为fixed时，offsetParent 返回 null</td>
+</tr>
+<tr>
+<td align="left">offsetHeight</td>
+<td align="left">在clientHeight的基础上， 加上边框和滚动条的高度</td>
+</tr>
+<tr>
+<td align="left">offsetWidth</td>
+<td align="left">在clientWidth的基础上， 加上边框和滚动条的高度</td>
+</tr>
+<tr>
+<td align="left">offsetLeft</td>
+<td align="left">当前元素到其offsetParent 节点的左边的距离</td>
+</tr>
+<tr>
+<td align="left">offsetTop</td>
+<td align="left">当前元素到其offsetParent 节点的上边的距离</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/offset.png" alt="offset.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p><img src="../images/clientHeight_offsetHeight_scrollHeight.png" alt="clientHeight_offsetHeight_scrollHeight.png"></p>
+<p><img src="../images/offsetParent.png" alt="offsetParent.png"></p>
+<h3 id="5-scroll相关"><a href="#5-scroll相关" class="headerlink" title="5.scroll相关"></a>5.scroll相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">scrollHeight</td>
+<td align="left">元素完整的高度和内边距，这个高度包括肉眼看不见、溢出、被窗口遮挡的部分</td>
+</tr>
+<tr>
+<td align="left">scrollWidth</td>
+<td align="left">元素完整的宽度和内边距，这个宽度度包括肉眼看不见、溢出、被窗口遮挡的部分</td>
+</tr>
+<tr>
+<td align="left">scrollTop</td>
+<td align="left">元素的 scrollTop 值是这个元素的顶部到它的最顶部可见内容（的顶部）的距离的度量。当一个元素的内容没有产生垂直方向的滚动条，那么它的 scrollTop 值为0；获取元素若为body时，document.body.scrollTop == window.scrollY;</td>
+</tr>
+<tr>
+<td align="left">scrollLeft</td>
+<td align="left">可以读取或设置元素滚动条到元素左边的距离，元素被卷起来的宽度；获取元素若为body时，document.body.scrollLeft == window.scrollX;</td>
+</tr>
+<tr>
+<td align="left">window.scrollX</td>
+<td align="left">返回文档/页面水平方向滚动的像素值</td>
+</tr>
+<tr>
+<td align="left">window.scrollY</td>
+<td align="left">返回文档在垂直方向已滚动的像素值</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/scrollHeight.png" alt="scrollHeight.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h3 id="6-Event相关"><a href="#6-Event相关" class="headerlink" title="6.Event相关"></a>6.Event相关</h3><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">e.clientX/clientY</td>
+<td align="left">相对于可视区域左上角的坐标</td>
+</tr>
+<tr>
+<td align="left">e.pageX/pageY</td>
+<td align="left">相对于整个文档（包括未显示区域）左上角的坐标</td>
+</tr>
+<tr>
+<td align="left">e.screenX/screenY</td>
+<td align="left">相对于屏幕左上角的坐标</td>
+</tr>
+<tr>
+<td align="left">e.offsetX/offsetY</td>
+<td align="left">相对于事件源（当前元素）左上角的坐标</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/clientX_pageX.png" alt="clientX_pageX.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="二、jQuery宽高属性"><a href="#二、jQuery宽高属性" class="headerlink" title="二、jQuery宽高属性"></a>二、jQuery宽高属性</h2><table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">width()</td>
+<td align="left">元素的content区域宽度</td>
+</tr>
+<tr>
+<td align="left">height()</td>
+<td align="left">元素的content区域高度</td>
+</tr>
+<tr>
+<td align="left">innerWidth()</td>
+<td align="left">元素的content+padding区域宽度</td>
+</tr>
+<tr>
+<td align="left">innerHeight()</td>
+<td align="left">元素的content+padding区域高度</td>
+</tr>
+<tr>
+<td align="left">outerWidth(Boolean)</td>
+<td align="left">可选，默认表示元素的content+padding+border区域的宽度，如果为true表示元素的content+padding+border+margin区域的宽度</td>
+</tr>
+<tr>
+<td align="left">outerHeight(Boolean)</td>
+<td align="left">可选，默认表示元素的content+padding+border区域的高度，如果为true表示元素的content+padding+border+margin区域的高度</td>
+</tr>
+<tr>
+<td align="left">scrollLeft()</td>
+<td align="left">相对于水平滚动条左边的距离</td>
+</tr>
+<tr>
+<td align="left">scrollTop()</td>
+<td align="left">相对于垂直滚动条上边的距离</td>
+</tr>
+<tr>
+<td align="left">offset()</td>
+<td align="left">返回相对于document的当前坐标值，包含left、top值</td>
+</tr>
+<tr>
+<td align="left">position()</td>
+<td align="left">返回相对于offsetParent的当前坐标值，包含left、top值</td>
+</tr>
+<tr>
+<td align="left"><img src="../images/jquery.png" alt="jquery.png"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="三、常用判断"><a href="#三、常用判断" class="headerlink" title="三、常用判断"></a>三、常用判断</h2><h3 id="1-判定元素是否滚动到底"><a href="#1-判定元素是否滚动到底" class="headerlink" title="1.判定元素是否滚动到底"></a>1.判定元素是否滚动到底</h3><p>如果元素滚动到底，下面等式返回true，没有则返回false：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">element.scrollHeight - element.scrollTop === element.clientHeight</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-offsetTop-与-style-top-的区别"><a href="#2-offsetTop-与-style-top-的区别" class="headerlink" title="2.offsetTop 与 style.top 的区别"></a>2.offsetTop 与 style.top 的区别</h3><p>(1) offsetTop 返回的是数字，而 style.top 返回的是字符串，除了数字外还带有单位：px</p>
+<p>(2) offsetTop 只读，而 style.top 可读写</p>
+<p>(3) 如果没有给 HTML 元素指定过 top 样式，则 style.top 返回的是空字符串</p>
+<h3 id="3-获取页面滚动条当前位置"><a href="#3-获取页面滚动条当前位置" class="headerlink" title="3.获取页面滚动条当前位置"></a>3.获取页面滚动条当前位置</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">document</span>.documentElement &amp;&amp; <span class="built_in">document</span>.documentElement.scrollTop) &#123; </span><br><span class="line">    scrollTop = <span class="built_in">document</span>.documentElement.scrollTop; </span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">document</span>.body) &#123;</span><br><span class="line">	scrollTop = <span class="built_in">document</span>.body.scrollTop; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-获取页面可视范围高度"><a href="#4-获取页面可视范围高度" class="headerlink" title="4.获取页面可视范围高度"></a>4.获取页面可视范围高度</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">document</span>.body.clientHeight &amp;&amp; <span class="built_in">document</span>.documentElement.clientHeight) &#123; </span><br><span class="line">    warpHeight = <span class="built_in">Math</span>.min(<span class="built_in">document</span>.body.clientHeight, <span class="built_in">document</span>.documentElement.clientHeight);</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123; </span><br><span class="line">	warpHeight = <span class="built_in">Math</span>.max(<span class="built_in">document</span>.body.clientHeight, <span class="built_in">document</span>.documentElement.clientHeight); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-获取页面完整高度"><a href="#5-获取页面完整高度" class="headerlink" title="5.获取页面完整高度"></a>5.获取页面完整高度</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max(<span class="built_in">document</span>.body.scrollHeight, <span class="built_in">document</span>.documentElement.scrollHeight)</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-获取滚动条宽度"><a href="#6-获取滚动条宽度" class="headerlink" title="6.获取滚动条宽度"></a>6.获取滚动条宽度</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> scrollBarWidth = el.offsetWidth - el.clientWidth;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-页面滚动离开首屏-这时可显示回到顶部的按钮"><a href="#7-页面滚动离开首屏-这时可显示回到顶部的按钮" class="headerlink" title="7.页面滚动离开首屏(这时可显示回到顶部的按钮)"></a>7.页面滚动离开首屏(这时可显示回到顶部的按钮)</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.body.scrollTop &gt; <span class="built_in">window</span>.innerHeight</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-图片懒加载判断"><a href="#8-图片懒加载判断" class="headerlink" title="8.图片懒加载判断"></a>8.图片懒加载判断</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">lazyload</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	    <span class="keyword">var</span> images = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'img'</span>);</span><br><span class="line">	    <span class="keyword">var</span> len    = images.length;</span><br><span class="line">	    <span class="keyword">var</span> n      = <span class="number">0</span>;      <span class="comment">//存储图片加载到的位置，避免每次都从第一张图片开始遍历		</span></span><br><span class="line">	    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">var</span> seeHeight = <span class="built_in">document</span>.documentElement.clientHeight;</span><br><span class="line">		<span class="keyword">var</span> scrollTop = <span class="built_in">document</span>.documentElement.scrollTop || <span class="built_in">document</span>.body.scrollTop;</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">var</span> i = n; i &lt; len; i++) &#123;</span><br><span class="line">		    <span class="keyword">if</span>(images[i].offsetTop &lt; seeHeight + scrollTop) &#123;</span><br><span class="line">		        <span class="keyword">if</span>(images[i].getAttribute(<span class="string">'src'</span>) === <span class="string">'images/loading.gif'</span>) &#123;</span><br><span class="line">			     images[i].src = images[i].getAttribute(<span class="string">'data-src'</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			n = n + <span class="number">1</span>;</span><br><span class="line">		     &#125;</span><br><span class="line">		&#125;</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> loadImages = lazyload();</span><br><span class="line">	loadImages();          <span class="comment">//初始化首页的页面图片</span></span><br><span class="line">	<span class="built_in">window</span>.addEventListener(<span class="string">'scroll'</span>, loadImages, <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p> 参考链接：</p>
+<p> <a href="https://juejin.im/entry/58523bf8128fe1006d9990ee" target="_blank" rel="noopener">JavaScript 及 jQuery 中的各种宽高属性图解</a></p>
+<p> <a href="https://www.w3cplus.com/javascript/offset-scroll-client.html" target="_blank" rel="noopener">JavaScript学习笔记：视口宽高、位置与滚动高度</a></p>
+<p> <a href="https://segmentfault.com/a/1190000007681873" target="_blank" rel="noopener">JS、jQuery各种宽高属性</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"><i class="fa fa-tag"></i> 前端</a>
+              <a href="/tags/js/" rel="tag"><i class="fa fa-tag"></i> js</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/css-layout-summary/" rel="prev" title="【CSS】布局方案总结">
+      <i class="fa fa-chevron-left"></i> 【CSS】布局方案总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/closure/" rel="next" title="【JS】闭包">
+      【JS】闭包 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、JS宽高属性"><span class="nav-text">一、JS宽高属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-window相关"><span class="nav-text">1.window相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-window-screen相关"><span class="nav-text">2.window.screen相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-client相关"><span class="nav-text">3.client相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-offset相关"><span class="nav-text">4.offset相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-scroll相关"><span class="nav-text">5.scroll相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Event相关"><span class="nav-text">6.Event相关</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、jQuery宽高属性"><span class="nav-text">二、jQuery宽高属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、常用判断"><span class="nav-text">三、常用判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-判定元素是否滚动到底"><span class="nav-text">1.判定元素是否滚动到底</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-offsetTop-与-style-top-的区别"><span class="nav-text">2.offsetTop 与 style.top 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-获取页面滚动条当前位置"><span class="nav-text">3.获取页面滚动条当前位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-获取页面可视范围高度"><span class="nav-text">4.获取页面可视范围高度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-获取页面完整高度"><span class="nav-text">5.获取页面完整高度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-获取滚动条宽度"><span class="nav-text">6.获取滚动条宽度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-页面滚动离开首屏-这时可显示回到顶部的按钮"><span class="nav-text">7.页面滚动离开首屏(这时可显示回到顶部的按钮)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-图片懒加载判断"><span class="nav-text">8.图片懒加载判断</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="roubin"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">roubin</p>
+  <div class="site-description" itemprop="description">芝兰其室，金石其心<br/>仁义为友，道德为师</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/satorioh" title="GitHub → https://github.com/satorioh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wangbinxp@gmail.com" title="E-Mail → mailto:wangbinxp@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">roubin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://roubinme.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://roubin.me/offset-scroll-client/";
+    this.page.identifier = "offset-scroll-client/";
+    this.page.title = "【JS】offset、scroll、client宽高属性总结";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://roubinme.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
