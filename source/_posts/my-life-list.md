@@ -37,6 +37,8 @@ permalink: my-life-list
 - 投资
 - Photoshop
 - 观星
+- 急救
+- 无人机
 
 #### 想体验的美食
 - 裕兴记三虾面
@@ -57,7 +59,6 @@ permalink: my-life-list
 - 吃遍苏城各大面馆
 - VR游戏
 - 坐过山车
-- 操作无人机
 - 蹦极
 - 公益志愿者
 - 看日出日落
