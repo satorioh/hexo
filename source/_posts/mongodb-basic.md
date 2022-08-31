@@ -6,7 +6,18 @@ tags:
 - mongodb
 permalink: mongodb-basic
 ---
-### 一、Mac下安装与运行
+## 一、Mac下安装与运行
+### 方式一：使用Homebrew安装([参考](https://www.mongodb.com/docs/v6.0/tutorial/install-mongodb-on-os-x/))
+```shell
+brew tap mongodb/brew
+brew update
+brew install mongodb-community@x.x
+
+mongod --config /opt/homebrew/etc/mongod.conf #直接启动
+brew services start mongodb/brew/mongodb-community #作为服务自动启动
+```
+
+### 方式二：手动下载安装
 #### 1.下载
 [官方下载](https://www.mongodb.com/try/download/community)， 解压下载的文件，无需安装，直接拷贝到 /usr/local 目录，然后重命名为 mongodb
 
@@ -61,7 +72,7 @@ mongo
 > db.shutdownServer();
 ```
 
-### 二、Node使用 mongoose 操作 MongoDB
+## 二、Node使用 mongoose 操作 MongoDB
 #### 1.连接db
 ```javascript
 const mongoose = require('mongoose');
@@ -114,3 +125,4 @@ await blogList.remove(query);
 
 [Mac OSX 平台 MongoDB 的安装及管理](https://cloud.tencent.com/developer/article/1770288)
 
+[Install MongoDB Community Edition on macOS](https://www.mongodb.com/docs/v6.0/tutorial/install-mongodb-on-os-x/)
