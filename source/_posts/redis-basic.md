@@ -6,8 +6,66 @@ tags:
 - redis
 permalink: redis-basic
 ---
-安装参考：https://cloud.tencent.com/developer/article/1606701
+### 安装与启动
+1.安装：
+首先保证电脑上有brew然后使用下面的命令安装即可
+```shell
+brew install redis
+```
 
+2.启动redis服务
+```shell
+brew services start redis
+```
+
+3.关闭redis服务
+```shell
+brew services stop redis
+```
+
+4.重启redis服务
+```shell
+brew services restart redis
+```
+
+5.打开图形化界面
+```shell
+redis-cli
+```
+
+6.开机启动redis命令
+```shell
+ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents
+```
+
+7.使用配置文件启动redis-server
+```shell
+redis-server /usr/local/etc/redis.conf
+```
+
+8.停止redis服务
+```shell
+redis-cli shutdown
+```
+
+9.redis配置文件位置
+```shell
+/usr/local/etc/redis.conf
+```
+
+10.卸载redis
+```shell
+brew uninstall redis rm ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
+```
+
+11.允许远程访问:
+默认情况下 redis不允许远程访问，只允许本机访问
+
+#注：在redis3.2之后，redis增加了protected-mode，在这个模式下，即使注释掉了bind 127.0.0.1，再访问redisd时候还是报错，需要把protected-mode yes改为protected-mode no
+```shell
+vim /usr/local/etc/redis.conf
+#bind 127.0.0.1 注释bind
+```
 ### 一、全局命令
 1.列出所有键（大量键时，生产禁止使用）：keys *
 
@@ -264,3 +322,7 @@ k.删除指定score范围的元素：zremrangebyscore [key] [min] [max]
 a.求多个集合的交集：zinterstore [destKey] [numKeys] [key1][key2]...weights [weight] aggregate [sum/min/max]
 
 b.求多个集合的并集：zunionstore [destKey] [numKeys] [key1][key2]...weights [weight] aggregate [sum/min/max]
+
+参考文章：
+
+[在Mac上安装redis](https://cloud.tencent.com/developer/article/1606701)
