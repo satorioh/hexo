@@ -40,6 +40,8 @@ ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents
 
 7.使用配置文件启动redis-server
 ```shell
+redis-server /opt/homebrew/etc/redis.conf
+# or
 redis-server /usr/local/etc/redis.conf
 ```
 
