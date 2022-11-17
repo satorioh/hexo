@@ -1,5 +1,5 @@
 ---
-title: 基础常用技巧
+title: Python基础常用技巧
 date: 2022-10-10 11:18:16
 categories: Python
 tags:
