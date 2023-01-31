@@ -82,5 +82,71 @@ for key, value in pairs:
     d[key].append(value)
 ```
 
+### 四、命名元组namedtuple
+#### 1.基本使用
+```python
+>>> from collections import namedtuple
+>>> Subscriber = namedtuple('Subscriber', ['addr', 'joined'])
+>>> sub = Subscriber('jonesy@example.com', '2012-10-19')
+>>> sub
+Subscriber(addr='jonesy@example.com', joined='2012-10-19')
+>>> sub.addr
+'jonesy@example.com'
+>>> sub.joined
+'2012-10-19'
+>>> len(sub)
+2
+>>> addr, joined = sub
+>>> addr
+'jonesy@example.com'
+>>> joined
+'2012-10-19'
+```
+
+#### 2.使用_replace()更新值
+```python
+>>> s = Stock('ACME', 100, 123.45)
+>>> s
+Stock(name='ACME', shares=100, price=123.45)
+>>> s.shares = 75
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+AttributeError: can't set attribute
+>>>
+
+>>> s = s._replace(shares=75)
+>>> s
+Stock(name='ACME', shares=75, price=123.45)
+```
+
+### 五、ChainMap
+#### 1.定义
+一个 ChainMap 接受多个字典并将它们在逻辑上变为一个字典。 然后，这些字典并不是真的合并在一起了， ChainMap 类只是在内部创建了一个容纳这些字典的列表 并重新定义了一些常见的字典操作来遍历这个列表
+
+和字典update方法的区别：
+
+a.如果出现重复键，那么第一次出现的映射值会被返回 
+
+b.对于字典的更新或删除操作总是影响的是列表中第一个字典
+
+c.原字典变了，会联动chainMap的字典
+
+#### 2.基本使用
+```python
+from collections import ChainMap
+
+a = {'x': 1, 'z': 3}
+b = {'y': 2, 'z': 4}
+c = ChainMap(a, b)
+print(c['x'])  # Outputs 1 (from a)
+print(c['y'])  # Outputs 2 (from b)
+print(c['z'])  # Outputs 3 (from a)
+
+# 修改
+c['y'] = 10
+print(a)  # {'x': 1, 'z': 3, 'y': 10}
+```
+
+
 
 
