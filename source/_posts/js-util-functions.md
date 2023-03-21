@@ -304,3 +304,18 @@ function rightPad(str, targetLength, padChar) {
     return str + Array(targetLength - str.length + 1).join(padChar);
 }
 ```
+
+#### 25.日历前后切换时的日期确定
+```javascript
+function getValidDate(date) {
+    const day = dayjs(date);
+    const diffMonths = dayjs(this.month).diff(day, "month");
+    const selectMonth = day.add(diffMonths >= 0 ? diffMonths + 1 : diffMonths, "month");
+    // 如果下个月的日期仍然存在，则返回该日期
+    if (selectMonth.date() === day.date()) {
+        return selectMonth.toDate();
+    }
+    // 否则返回下个月的最后一天
+    return selectMonth.endOf("month").toDate();
+}
+```
