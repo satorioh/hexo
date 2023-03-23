@@ -309,8 +309,8 @@ function rightPad(str, targetLength, padChar) {
 ```javascript
 function getValidDate(date) {
     const day = dayjs(date);
-    const diffMonths = dayjs(this.month).diff(day, "month");
-    const selectMonth = day.add(diffMonths >= 0 ? diffMonths + 1 : diffMonths, "month");
+    const diffMonths = dayjs(this.month).diff(day.format("YYYY-MM"), "month");
+    const selectMonth = day.add(diffMonths, "month");
     // 如果下个月的日期仍然存在，则返回该日期
     if (selectMonth.date() === day.date()) {
         return selectMonth.toDate();
