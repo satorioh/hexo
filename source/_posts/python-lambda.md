@@ -7,19 +7,40 @@ tags:
 permalink: python-lambda
 ---
 ### 一、语法
-
 ```python
 lambda argument_list:expersion
+```
+注意1：lambda函数体只能写一句话
+
+注意2：不支持赋值语句，如下代码报错
+```python
+func01 = lambda p: p = 10
 ```
 <!--more-->
 
 ### 二、使用
 
 #### 1.定义为函数
+##### (1)有参数有返回值
 
 ```python
 add = lambda x,y: x+y
 add(1,4) # 5
+```
+##### (2)无参数有返回值
+```python
+func01 = lambda: True
+print(func01())
+```
+##### (3)有参数无返回值
+```python
+func01 = lambda p: print(p)
+func01(123)
+```
+##### (4)无参数无返回值
+```python
+func01 = lambda: print("hello")
+func01()
 ```
 
 #### 2.即时定义即时使用
