@@ -68,7 +68,7 @@ x = layers.Dropout(0.5)(x)
 x = layers.Conv2D(filters=128, kernel_size=3, activation="relu")(x)
 x = layers.MaxPooling2D(pool_size=2)(x)
 x = layers.Dropout(0.5)(x)
-x = layers.Flatten()(x) # 转成二维格式
+x = layers.Flatten()(x) # 展平成一维
 x = layers.Dense(512, activation="relu")(x)
 x = layers.Dropout(0.5)(x)
 outputs = layers.Dense(5, activation="softmax")(x) # 因为有5种类别，所以只需要5个神经元做输出
