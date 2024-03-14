@@ -162,19 +162,19 @@ Faster R-CNN的loss由两部分组成：RPN的loss + RoI Head中的loss构成，
 关于smooth L1可以参考这篇文章：[回归损失函数1：L1 loss, L2 loss以及Smooth L1 Loss的对比](https://www.cnblogs.com/wangguchangqing/p/12021638.html)
 
 
-### QA
-#### 1.bbox、anchor box、RoI、region proposal的区别？
+## 三、QA
+### 1.bbox、anchor box、RoI、region proposal的区别？
 
 - bbox：全称是bounding box，边界框。其中GT(Ground Truth) Bounding Box是每一张图中人工标注的框的位置。一张图中有几个目标，就有几个框。Faster R-CNN的预测结果也可以叫bounding box，不过一般叫 Predict Bounding Box
 - anchor box: 中文有翻译成锚框、先验框的。是人为选定的具有一定尺度、比例的框。一个feature map的锚框的数目可以有上万个（比如 20000）
 - RoI: region of interest，候选框、候选区域。在RPN阶段，先穷举生成千上万个anchor，然后利用Ground Truth Bounding Boxes，训练这些anchor，而后从anchor中找出一定数目的候选区域（RoIs）。RoIs在下一阶段用来训练RoIHead，最后生成Predict Bounding Boxes
 - region proposal：候选区域，简称proposal，个人认为和RoI是一个概念，只不过通过RPN生成的proposal，又起了一个新名字叫RoI
 
-#### 2.为什么需要anchor box，而不是直接去预测位置？
+### 2.为什么需要anchor box，而不是直接去预测位置？
 如果没有Anchor，做物体检测需要直接预测每个框的坐标，由于框的坐标变化幅度大，使网络很难收敛与准确预测，而Anchor相当于提供了一个先验的阶梯，使得模型去预测Anchor的偏移量，即可更好地接近真实物体。
 实际上，Anchor是我们想要预测属性的先验参考值，并不局限于矩形框。如果需要，我们也可以增加其他类型的先验，如多边形框、角度和速度等。
 
-#### 3.Faster R-CNN中一共有几个loss？
+### 3.Faster R-CNN中一共有几个loss？
 有4个，如下：
 - RPN分类损失：anchor是否为前景（二分类）
 - RPN位置回归损失：anchor位置微调
