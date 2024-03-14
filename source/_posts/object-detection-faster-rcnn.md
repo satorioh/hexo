@@ -26,7 +26,7 @@ Faster R-CNN是由Ross B.Girshick在2016年提出的，做为two-stage算法的�
 - Input(输入): 对于输入的图像，首先需要缩放至固定大小MxN，然后再将MxN图像送入网络。虽然Faster R-CNN本身并不限制输入图像的大小，但是在实际训练过程中，太大的图像容易撑爆内存
 - Backbone(主干网络)：也有叫它Extractor的。主要为Conv layers（卷积层），来提取图像特征（feature maps），用于后续的RPN层和全连接层。此处可以使用ZF/vgg/Resnet/MobileNet等。以vgg16为例，包含了13个conv层+13个relu层+4个pooling层
 - RPN(Region Proposal Network)：最大的创新点，解决了前两代算法使用ss（selective search）生成region proposals（候选区）太慢的问题。通过softmax判断anchors（下文会讲）属于positive或者negative，再利用bounding box regression修正anchors获得精确的proposals（第一次修正，后面还有一次），这里输出的proposals又称为RoIs（Region of Interests）
-- ROI Pooling：输入的是Backbone给到的feature maps和RPN生成的RoIs，综合这些信息后输出proposal feature maps，送入后续全连接层，用于最终的分类和第二次的bounding box（bbox，检测框）regression来修正检测框
+- ROI Pooling：输入的是Backbone给到的feature maps和RPN生成的RoIs，通过RoIs在feature map上进行截取，获得proposal feature maps，送入后续全连接层，用于最终的分类和第二次的bounding box（bbox，检测框）regression来修正检测框
 - RoI Head：全连接层，有些书里将这部分称之为检测头，主要是利用proposal feature maps计算bbox的类别，同时再次bounding box regression获得检测框最终的精确位置。
 
 下面分别详细介绍这五部分
@@ -51,7 +51,7 @@ Faster R-CNN是由Ross B.Girshick在2016年提出的，做为two-stage算法的�
 以vgg16为例，因为有4个pooling层，所以一个MxN大小的矩阵经过Backbone后变为(M/16)x(N/16)，即下采样16倍，这个比列（16）很重要，后续feature map映射回原图时需要通过它来计算
 
 ### 4.RPN
-RPN其实也是一个神经网络，有自己的loss function，以及相关概念，它实现了对Region Proposal的初步二分类和定位
+RPN用于提供候选区域，它其实也是一个神经网络，有自己的loss function，以及相关概念，它实现了对Region Proposal的初步二分类和定位
 #### (1)Anchor Box
 在RPN中，作者提出了Anchor的概念。Anchor是人为预定义的边框(先验框)，也就是一组预设的边框。在训练时，以真实的边框位置相对于预设边框的偏移来构建训练样本。这就相当于，**预设边框先大致在可能的位置“框“出来目标，然后再在这些预设边框的基础上进行调整**。
 
@@ -121,7 +121,7 @@ RPN网络结构就介绍到这里，总结起来就是：
 
 ### 5.RoI Pooling
 ![网络结构](../images/fastrcnn_net.png)
-该部分负责收集RoIs，并计算出proposal feature maps，送入后续网络。从上图中可以看到Rol pooling层有2个输入：
+该部分负责收集RoIs，并在原始的feature map上截取出proposal feature maps，送入后续网络。从上图中可以看到Rol pooling层有2个输入：
 - 原始的feature maps
 - RPN输出的RoIs
 
