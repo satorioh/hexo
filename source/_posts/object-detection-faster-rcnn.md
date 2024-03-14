@@ -57,7 +57,7 @@ RPN其实也是一个神经网络，有自己的loss function，以及相关概�
 
 在一幅图像中，要检测的目标可能出现在图像的任意位置，并且目标可能是任意的大小和任意形状，为了尽可能的框出目标可能出现的位置，预定义边框通常有上千个甚至更多
 
-Anchor Box的生成是以Backbone最后生成的Feature Map上的点为中心的（可以映射回原图），以vgg16为例，使用vgg对输入的图像下采样了16倍，也就是Feature Map上的一个点对应于输入图像上的一个16×16的正方形区域（感受野）。根据预定义的Anchor，Feature Map上的一点为中心，就可以在原图上生成9种不同形状不同大小的边框，如下图：
+Anchor Box的生成是以Backbone最后生成的feature Map上的点为中心的（可以映射回原图），以vgg16为例，使用vgg对输入的图像下采样了16倍，也就是Feature Map上的一个点对应于输入图像上的一个16×16的正方形区域（感受野）。根据预定义的Anchor，Feature Map上的一点为中心，就可以在原图上生成9种不同形状不同大小的边框，如下图：
 ![anchor to feature map](../images/anchor_feature_map.png)
 
 作者论文中用到的anchor有三种尺寸(scale)和三种比例(ratio)，如下图所示，三种尺寸分别是小（蓝128）中（红256）大（绿512），三个比例分别是1:1，1:2，2:1。3×3的组合总共有9种anchor。
@@ -108,16 +108,80 @@ Proposal Layer负责综合所有coordinates(dx, dy, dw, dh)变换量和positive 
 该层的流程如下图 (摘自《深度学习之PyTorch物体检测实战》)：
 ![Proposal Layer流程](../images/fasterrcnn_rpn_prop_layer.png)
 
-首先生成大小固定的全部Anchors，然后将网络中得到的回归偏移作用到Anchor上使Anchor更加贴近于真值，并修剪超出图像尺寸的Proposal，得到最初的建议区域。在这之后，按照分类网络输出的得分对Anchor排序，保留前12000个得分高的Anchors。由于一个物体可能会有多个Anchors重叠对应，因此再应用非极大值抑制（NMS）将重叠的框去掉，最后在剩余的Proposal中再次根据RPN的预测得分选择前2000个，作为最终的Proposal，输出到下一个阶段。
+首先生成大小固定的全部Anchors，然后将网络中得到的回归偏移作用到Anchor上使Anchor更加贴近于真值，并修剪超出图像尺寸的Proposal，得到最初的RoIs（region of interests）。在这之后，按照分类网络输出的得分对RoIs排序，保留前12000个得分高的RoIs。由于一个物体可能会有多个RoIs重叠对应，因此再应用非极大值抑制（NMS）将重叠的框去掉，最后在剩余的RoIs中再次根据RPN的预测得分选择前2000个，作为最终的RoIsl，输出到下一个阶段。
 
 其中，对于anchor box的回归（定位）偏移调整又是如何实现的呢？这里偷个懒，直接贴一篇大神的解释：[Fast R-CNN中的边框回归](https://www.cnblogs.com/wangguchangqing/p/10393934.html)，讲的很详细
 
 那NMS去掉重叠框又是怎么操作的呢？具体过程如下图：
 ![NMS](../images/nms.png)
+假设有A和B两个框，A的score是0.98，B的score是0.86，计算AB的IoU，如果IoU大于阈值（比如0.5），则认为AB是同一个物体，然后删除score较小的B，以此循环来去掉重叠的框
+
+RPN网络结构就介绍到这里，总结起来就是：
+**生成anchors -> softmax分类器提取positvie anchors -> bbox reg回归修正positive anchors -> Proposal Layer生成RoIs**
+
+### 5.RoI Pooling
+![网络结构](../images/fastrcnn_net.png)
+该部分负责收集RoIs，并计算出proposal feature maps，送入后续网络。从上图中可以看到Rol pooling层有2个输入：
+- 原始的feature maps
+- RPN输出的RoIs
+
+#### (1)为何需要RoI Pooling
+因为RoIs是从anchor box修正来的，所以大小各不相同，而后面的FC（全连接层）又需要统一的输入尺寸，所以这里使用pooling将RoIs大小统一
+
+#### (2)RoI Pooling运算过程
+这里有3个参数：pooled_w、pooled_h和spatial_scale
+- 首先使用spatial_scale参数(16)将每个RoI映射回(M/16)x(N/16)大小的feature map尺度；
+- 再将每个RoI对应的feature map区域水平分为 pool_w*pool_h 的网格；
+- 对网格的每一份都进行max pooling处理
+
+
+  这样处理后，即使大小不同的RoI，输出结果都是 pool_w*pool_h 固定大小，实现了固定长度输出
+![RoI Pooling](../images/fasterrcnn_roi_pooling.png)
+RoI Pooling是一种特殊的Pooling操作，假设给定一张图片的feature map(512×H/16×W/16) ，和128个候选区域的座标（128×4），RoI Pooling将这些区域统一下采样到（512×7×7），就得到了128×512×7×7的向量。可以看成是一个batch-size=128，通道数为512，7×7的feature map 
+#### (3)为什么要pooling成7×7的尺度？
+  是为了能够共享权重。看下vgg网络结构图（如下），Faster R-CNN除了用到vgg前几层的卷积之外，最后的全连接层也可以继续利用。当所有的RoIs都被pooling成（512×7×7）的feature map后，将它reshape 成一个一维的向量，就可以利用vgg16预训练的权重，初始化前两层全连接
+![vgg](../images/vgg.png)
+
+### 6.RoI Head
+![RoI Head](../images/fasterrcnn_roi_head.png)
+该部分网络结构如上图，利用已经获得的proposal feature maps，通过全连接层与softmax计算每个RoI具体属于哪个类别（人、车、电视等），输出cls_prob概率向量（这里有21个值，即20个类别+1个背景）；同时再次利用bounding box regression获得每个proposal的位置偏移量bbox_pred（这里有84个值，21个类 x 每个类有4个位置参数），用于回归更加精确的目标检测框
+
+### 7.损失函数
+Faster R-CNN的loss由两部分组成：RPN的loss + RoI Head中的loss构成，而这两部分中，每一个部分的loss又都是由分类loss + 回归loss组成。以RPN为例，如下图：
+![RPN loss](../images/rpn_loss_all.png)
+
+其中分类损失部分，使用多分类交叉熵，如下图：
+![RPN softmax loss](../images/rpn_loss_cls_softmax.png)
+
+也可以使用sigmoid实现，即二分类交叉熵，如下图：
+![RPN sigmoid loss](../images/rpn_loss_cls_sigmoid.png)
+
+回归损失部分，使用smooth L1函数，如下图：
+![RPN reg loss](../images/rpn_loss_reg.png)
+
+关于smooth L1可以参考这篇文章：[回归损失函数1：L1 loss, L2 loss以及Smooth L1 Loss的对比](https://www.cnblogs.com/wangguchangqing/p/12021638.html)
 
 
 ### QA
-#### 1.RPN具体是如何对anchor做分类和回归的？
+#### 1.bbox、anchor box、RoI、region proposal的区别？
+
+- bbox：全称是bounding box，边界框。其中GT(Ground Truth) Bounding Box是每一张图中人工标注的框的位置。一张图中有几个目标，就有几个框。Faster R-CNN的预测结果也可以叫bounding box，不过一般叫 Predict Bounding Box
+- anchor box: 中文有翻译成锚框、先验框的。是人为选定的具有一定尺度、比例的框。一个feature map的锚框的数目可以有上万个（比如 20000）
+- RoI: region of interest，候选框、候选区域。在RPN阶段，先穷举生成千上万个anchor，然后利用Ground Truth Bounding Boxes，训练这些anchor，而后从anchor中找出一定数目的候选区域（RoIs）。RoIs在下一阶段用来训练RoIHead，最后生成Predict Bounding Boxes
+- region proposal：候选区域，简称proposal，个人认为和RoI是一个概念，只不过通过RPN生成的proposal，又起了一个新名字叫RoI
+
+#### 2.为什么需要anchor box，而不是直接去预测位置？
+如果没有Anchor，做物体检测需要直接预测每个框的坐标，由于框的坐标变化幅度大，使网络很难收敛与准确预测，而Anchor相当于提供了一个先验的阶梯，使得模型去预测Anchor的偏移量，即可更好地接近真实物体。
+实际上，Anchor是我们想要预测属性的先验参考值，并不局限于矩形框。如果需要，我们也可以增加其他类型的先验，如多边形框、角度和速度等。
+
+#### 3.Faster R-CNN中一共有几个loss？
+有4个，如下：
+- RPN分类损失：anchor是否为前景（二分类）
+- RPN位置回归损失：anchor位置微调
+- RoI分类损失：RoI所属类别（21分类，多了一个类作为背景）
+- RoI位置回归损失：继续对RoI位置微调
+  
+四个损失相加作为最后的损失，反向传播，更新参数
 
 
 
@@ -132,6 +196,8 @@ Proposal Layer负责综合所有coordinates(dx, dy, dw, dh)变换量和positive 
 [Fast R-CNN中的边框回归](https://www.cnblogs.com/wangguchangqing/p/10393934.html)
 
 [精读Faster RCNN](https://zhuanlan.zhihu.com/p/82185598)
+
+[回归损失函数1：L1 loss, L2 loss以及Smooth L1 Loss的对比](https://www.cnblogs.com/wangguchangqing/p/12021638.html)
 
 [Faster R-CNN理论合集](https://www.bilibili.com/video/BV1af4y1m7iL/)
 
