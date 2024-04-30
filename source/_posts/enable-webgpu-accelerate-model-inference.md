@@ -124,7 +124,9 @@ async function init() {
 
 3.将tensorflow.js和现代化的前端框架结合，可以进一步减小bundle size，优化渲染和加载速度
 
-4.针对遇到的问题，代码还存在优化调整的空间
+4.使用Cache API或Indexed DB对模型文件进行缓存
+
+5.针对遇到的问题，代码还存在优化调整的空间
 
 
 参考：
