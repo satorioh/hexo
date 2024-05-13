@@ -141,3 +141,251 @@ if __name__ == '__main__':
 | 结果是否有序   | 是                                             | 否                               |
 | 是否支持任务取消 | 是                                             | 是                               |
 | 超时处理     | 不支持设置超时,如果其中一个任务永远不返回,它将一直等待下去                |设置timeout参数,在指定时间后会取消未完成的任务|
+
+### 三、魔法方法（Dunder/Magic Methods）
+#### 1.概念
+用双下划线包围的内置方法，通过重写这些方法，可以自定义类的行为和状态
+
+#### 2.常用魔法方法
+##### （1）`__new__`
+在对象实例化时调用的第一个方法，用于创建实例对象。它接受类`cls`，然后将所有参数传递给`__init__`。需要返回一个对象实例，如果没有返回值，则实例化对象的结果为None
+
+实现单例模式：
+```python
+# 单例模式
+class Test:
+    INS = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.INS is None:
+            print("正在给Test创建对象")
+            ins = super().__new__(cls, **kwargs)
+            cls.INS = ins
+            return ins
+        else:
+            return cls.INS
+
+
+t1 = Test()
+t2 = Test()
+t3 = Test()
+t4 = Test()
+
+print(t1 is t2 is t3 is t4)  # True
+print(id(t1))  # 4372691408
+print(id(t2))  # 4372691408
+print(id(t3))  # 4372691408
+```
+实现工厂模式：
+```python
+# 工厂模式
+class A:
+    pass
+
+
+class B:
+    pass
+
+
+class C:
+    pass
+
+
+class Factory:
+    """匹配工厂"""
+    cls_map = {
+        'A': A,
+        'B': B,
+        'C': C
+    }
+
+    def __new__(cls, value):
+        target_cls = cls.cls_map.get(value)
+        if target_cls is None:
+            raise ValueError(f"不符合条件的value: {value}")
+        return target_cls()
+
+
+ins1 = Factory("A")
+print(ins1.__class__.__name__)  # A
+
+ins2 = Factory("D")
+print(ins2.__class__.__name__)  # ValueError: 不符合条件的value: D
+
+```
+
+##### （2）`__init__`
+初始化实例对象，为其添加属性
+```python
+class Test:
+    def __new__(cls, *args, **kwargs):
+        print("正在给Test创建对象")
+        ins = super().__new__(cls, **kwargs)
+        print(ins)  # <__main__.Test object at 0x102bcba60>
+        return ins
+
+    def __init__(self):
+        print(self)  # <__main__.Test object at 0x102bcba60>
+        self.age = 100
+        self.name = 'xiaoming'
+        print(self.name)  # xiaoming
+
+    def func01(self):
+        print(self.name)  # xiaoming
+        print(self.age)  # 100
+
+
+t = Test()
+t.func01()
+
+```
+##### （3）`__enter__`和`__exit__`
+上下文管理协议(with)的实现原理
+
+执行顺序：
+```python
+class Test:
+    def __init__(self):
+        print('init')
+        self.a = 111
+
+    def __enter__(self):
+        print('__enter__() is call!')
+        return self
+
+    def do_something(self):
+        print('do something!')
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print('__exit__() is call!')
+        print(f'type:{exc_type}')
+        print(f'value:{exc_value}')
+        print(f'trace:{traceback}')
+
+
+with Test() as sample:
+    sample.do_something()
+    
+"""
+init
+__enter__() is call!
+do something!
+__exit__() is call!
+type:None
+value:None
+trace:None
+"""
+
+```
+
+##### （4）`__getattr__`和`__getattribute__`
+`__getattr__`: 当访问一个不存在的属性时会被调用，常用于实现对缺失属性的回退机制，比如deprecated api信息的返回
+```python
+class MyClass:
+    def __init__(self, name):
+        self.name = name
+
+    def __getattr__(self, attr):
+        if attr == "age":
+            return 30
+        else:
+            raise AttributeError(f"Attribute '{attr}' not found")
+
+my_obj = MyClass("Bob")
+print(my_obj.name)  # 输出：Bob
+print(my_obj.age)  # 输出：30
+print(my_obj.city)  # 输出：AttributeError: Attribute 'city' not found
+
+```
+`__getattribute__`: 每次访问属性时都会被调用，如果属性存在，则直接返回该属性，如果不存在，则走`__getattr__`。可用作属性拦截器、权限验证
+```python
+class Girl:
+
+    def __init__(self):
+        self.name = "小明"
+        self.age = 17
+
+    def __getattr__(self, item):
+        return f"属性 {item} 不存在"
+
+    def __getattribute__(self, item):
+        if item == "age":  # 拦截器，作用：权限校验
+            return "女人芳龄不可泄露，别问，问就是还不到 18 岁"
+        return super().__getattribute__(item)
+
+
+girl = Girl()
+# name 属性存在，所以在 __getattribute__ 中直接返回
+print(girl.name)
+"""
+小明
+"""
+# age 也是如此，也是在 __getattribute__ 中直接返回
+# 只不过它相当于被拦截了
+print(girl.age)
+"""
+女人芳龄不可泄露，别问，问就是还不到 18 岁
+"""
+# 父类在执行 __getattribute__ 的时候，发现 xxx 属性不存在
+# 于是会触发 __getattr__ 的执行（如果没定义则抛出 AttributeError）
+print(girl.xxx)
+"""
+属性 xxx 不存在
+"""
+
+```
+注意：为了避免`__getattribute__`陷入无限循环，需要调用父类的`__getattribute__`
+```python
+super().__getattribute__(item)
+```
+##### （5）`__str__`和`__repr__`
+`__str__`: 在调用str()、format()、print()函数时，生成一个友好易于阅读的输出形式
+
+`__repr__`: 调用repr()或直接查看对象时，会调用该方法，主要用于调试和开发。当仅定义`__repr__`的时候， `__repr__` == `__str__`
+
+### 四、OOP
+#### 1.`@property`
+##### （1）设置只读属性：
+```python
+class House:
+
+    def __init__(self, price):
+        self._price = price
+
+    @property
+    def price(self):
+        return self._price
+
+house = House(100)
+print(house.price)  # 100
+house.price = 200  # AttributeError: can't set attribute 'price'
+```
+##### （2）自定义属性修改/删除逻辑
+```python
+class House:
+
+    def __init__(self, price):
+        self._price = price
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, new_price):
+        if new_price > 0 and isinstance(new_price, float):
+            self._price = new_price
+        else:
+            print("Please enter a valid price")
+
+    @price.deleter
+    def price(self):
+        del self._price
+
+
+house = House(100)
+print(house.price)  # 100
+house.price = 200  # Please enter a valid price
+house.price = 200.0
+print(house.price)  # 200.0
+```
