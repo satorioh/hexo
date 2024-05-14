@@ -621,3 +621,24 @@ if __name__ == '__main__':
     asyncio.run(main1())
 
 ```
+
+### 六、算法
+#### 1.递归
+##### （1）阶乘
+```python
+def fn(n):
+    if n == 1:
+        return 1
+
+    return n * fn(n - 1)
+```
+##### （2）斐波那契数列
+```python
+# 1 1 2 3 5 8 13 21
+
+def fibo(n):
+    if n == 1 or n == 2:
+        return 1
+    else:
+        return fibo(n-1) + fibo(n-2) 
+```
