@@ -278,7 +278,81 @@ trace:None
 
 ```
 
-##### （4）`__getattr__`和`__getattribute__`
+##### （4）`__aenter__`和`__aexit__`
+周期任务：要求随主线程一起开始，随主线程一起结束
+
+```python
+import asyncio
+import threading
+from typing import List, NamedTuple, Coroutine, Callable
+
+
+class PeriodTask(NamedTuple):
+    on_stop: Callable[[], Coroutine]
+
+
+class Runner:
+
+    def __init__(self):
+        print("开始初始化")
+        self.scheduled_tasks: List[PeriodTask] = []
+        self.status: bool = True
+
+    def loop_when(self):
+        return self.status
+
+    def schedule_task(
+            self,
+            coro: Callable[[], Coroutine],
+            loop_when: Callable[[], bool] = None,
+            step: int = 2,
+            on_stop: Callable[[], Coroutine] = None,
+    ):
+        async def task_body():
+            print('后台任务运行的线程名为', threading.current_thread().name)
+            while loop_when():
+                await coro()
+                await asyncio.sleep(step)
+            if on_stop is not None:
+                await on_stop()
+
+        task = asyncio.create_task(task_body())
+        self.scheduled_tasks.append(
+            PeriodTask(
+                on_stop=on_stop
+            )
+        )
+
+    async def period_task_start(self):
+        # print(threading.current_thread().name)
+        print("我是一个周期任务-执行了")
+
+    async def period_task_stop(self):
+        print("我是一个周期任务-周期任务结束")
+
+    async def __aenter__(self):
+        self.schedule_task(self.period_task_start, self.loop_when, on_stop=self.period_task_stop)
+        # print("主任务正在继续执行别的耗时任务",threading.current_thread().name)
+        await asyncio.sleep(10)
+        print('主任务睡了十秒后苏醒了')
+        self.status = False
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        for task in self.scheduled_tasks:
+            await task.on_stop()
+
+
+async def run():
+    async with Runner() as runner:
+        pass
+
+
+if __name__ == '__main__':
+    asyncio.run(run())
+
+```
+
+##### （5）`__getattr__`和`__getattribute__`
 `__getattr__`: 当访问一个不存在的属性时会被调用，常用于实现对缺失属性的回退机制，比如deprecated api信息的返回
 ```python
 class MyClass:
@@ -338,10 +412,46 @@ print(girl.xxx)
 ```python
 super().__getattribute__(item)
 ```
-##### （5）`__str__`和`__repr__`
+##### （6）`__str__`和`__repr__`
 `__str__`: 在调用str()、format()、print()函数时，生成一个友好易于阅读的输出形式
 
 `__repr__`: 调用repr()或直接查看对象时，会调用该方法，主要用于调试和开发。当仅定义`__repr__`的时候， `__repr__` == `__str__`
+
+##### （7）`__call__`
+将类的实例对象变成可调用的函数。
+
+实现自定义装饰器：
+```python
+import time
+
+
+class Timer:
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        start_time = time.time()
+        result = self.func(*args, **kwargs)
+        end_time = time.time()
+        print('执行时间：{}秒'.format(end_time - start_time))
+        return result
+
+
+@Timer
+def slow_func(n):
+    time.sleep(n)
+    return n
+
+
+print(slow_func(2))
+"""
+执行时间：2.00334095954895秒
+2
+"""
+
+```
+
+
 
 ### 四、OOP
 #### 1.`@property`
@@ -388,4 +498,126 @@ print(house.price)  # 100
 house.price = 200  # Please enter a valid price
 house.price = 200.0
 print(house.price)  # 200.0
+```
+
+### 五、装饰器
+#### 1.概念
+装饰器是一个函数，入参是被装饰的函数，返回值是一个新函数，新函数会调用被装饰的函数，并维持被装饰函数的签名
+
+#### 2.示例
+##### （1）在旧功能不变的情况下，添加新功能:
+```python
+from functools import wraps
+
+
+def verify_permissions(func):
+    @wraps(func)  # 保留原函数的元信息
+    def wrapper(*args, **kwargs):
+        print("验证权限")
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+@verify_permissions
+def insert(data):
+    print(insert.__name__)
+    print(f"插入{data}")
+
+
+insert("数据")
+"""
+验证权限
+insert
+插入数据
+"""
+
+```
+##### （2）多层装饰器
+加载/执行顺序：靠近main函数的装饰器先加载，远离main函数的装饰器功能先执行
+```python
+def dec1(func):  # func=wrapper002
+    print("装饰器1正在加载中")
+
+    def wrapper001(*args, **kwargs):
+        print("装饰器1的功能正在执行中")
+        func(*args, **kwargs)
+
+    return wrapper001
+
+
+def dec2(func):  # func=main
+    print("装饰器2正在加载中")
+
+    def wrapper002(*args, **kwargs):
+        print("装饰器2的功能正在执行中")
+        func(*args, **kwargs)
+
+    return wrapper002
+
+
+@dec1  # @dec1=dec1(func) ; func=dec2(main)
+@dec2
+def main():  # main=dec1(dec2(func))
+    print("原始函数main函数执行了")
+
+
+# 装饰器2正在加载中
+# 装饰器1正在加载中
+# 装饰器1的功能正在执行中
+# 装饰器2的功能正在执行中
+# 原始函数main函数执行了
+
+if __name__ == '__main__':
+    main()
+
+```
+##### （3）装饰器传参
+```python
+import asyncio
+import functools
+
+
+def i_am_decorator(
+        func=None,
+        first=None,
+        second=None,
+        third=None,
+):
+    if not all((first, second, third)):
+        raise ValueError('参数缺失')
+
+    if func is None:
+        return functools.partial(i_am_decorator, first=first, second=second, third=third)
+
+    print("执行新功能啦")
+
+    if asyncio.iscoroutinefunction(func):
+        async def wrapper(*args, **kwargs):
+            return await func(*args, **kwargs)
+    else:
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+# @i_am_decorator(first=True, second=True, third=True)
+dec = i_am_decorator(first=True, second=True, third=True)
+
+
+@dec  # main=dec(main)
+def main():
+    print('main执行了')
+
+
+@dec
+async def main1():
+    print('main1执行了')
+
+
+if __name__ == '__main__':
+    main()
+    asyncio.run(main1())
+
 ```
