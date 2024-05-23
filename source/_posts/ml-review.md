@@ -33,7 +33,7 @@ CV: 旋转、缩放、裁剪、调整色调、亮度、对比度、添加噪声�
 NLP: 近义词替换、文本摘要。。。。
 ```
 
-#### 4.采用的模型是什么？为什么？
+#### 4.采用的模型是什么？为什么使用YOLOv8？
 ```
 效果
   依据：根据实际需求，以及项目的难易程度，选择现有的、经典的、成熟的模型，更换成自己的数据集，进行训练，并调参
@@ -41,6 +41,11 @@ NLP: 近义词替换、文本摘要。。。。
   如果不确定模型，选择多个模型，进行对比，选择效果最好的
   
   在有些情况下，需要多个模型配合使用，发挥各自的特长
+
+YOLOv8优势
+    1.保持高精度的同时，具有更快的推理速度，适合实时检测
+    2.多模型尺寸、多任务能力
+    3.友好的文档、API、社区支持
 ```
 
 #### 5.什么情况下使用OpenCV，什么情况下使用深度学习？
@@ -133,4 +138,95 @@ Opencv：不需要程序理解图像的场景和内容，图像相对单一，�
    	预定义候选区，直接在特征图上分类+定位
    	速度比较快，精度较低
    	YOLO系列、SSD、RetinaNet
+```
+
+#### 14.什么是感受野？
+
+#### 15.L1、L2、smooth L1正则化的区别
+
+#### 16.YOLOv8中的objectness loss是什么？
+
+#### 17.什么是特征归一化？为什么要归一化？
+```
+归一化一般是将数据映射到指定的范围（[0, 1] 或 [-1, 1]），从而消除不同特征量纲的影响。
+进行归一化处理，使得不同指标之间处于同一数量级，具有可比性。另外还能加速模型收敛，提升性能
+```
+
+#### 18.归一化常用方法？
+```
+Min-Max Normalization
+公式：X = (X-Xmin) / (Xmax - Xmin)
+--------------------------------------
+
+import numpy as np
+import sklearn.preprocessing as sp
+
+raw_sample = np.array([[3.0, -100.0, 2000.0],
+                       [0.0, 400.0, 3000.0],
+                       [1.0, -400.0, 2000.0]])
+
+mms_sample = raw_sample.copy()
+
+# 1.减去最小值
+# 2.减完之后的结果/极差
+for col in mms_sample.T:
+    col_min = col.min()
+    col_max = col.max()
+    col -= col_min
+    col /= (col_max - col_min)
+  
+    
+# 基于skLearn提供的API实现
+scaler = sp.MinMaxScaler()
+res = scaler.fit_transform(raw_sample)
+```
+
+#### 19.归一化处理适用模型
+```
+应用归一化的模型：在实际应用中，通过梯度下降法求解的模型通常是需要归一化的，包括线性回归、逻辑回归、支持向量机、神经网络等模型。
+不使用归一化的模型：如决策树分类
+```
+
+#### 20.什么是标准化？常用方法？
+```
+标准化是将特征值调整为均值为0，标准差为1的标准正态分布
+
+Z-Score Normalization
+公式：X = (X - Xmean) / Xstd
+-----------------------------------
+
+import numpy as np
+import sklearn.preprocessing as sp
+
+raw_sample = np.array([[3.0, -100.0, 2000.0],
+                       [0.0, 400.0, 3000.0],
+                       [1.0, -400.0, 2000.0]])
+
+std_sample = raw_sample.copy()
+
+# 1.减去当前列的平均值
+# 2.离差/原始数据的标准差
+for col in std_sample.T:
+    col_mean = col.mean()  # 平均值
+    col_std = col.std()  # 标准差
+    col -= col_mean
+    col /= col_std
+
+    
+# 基于skLearn提供的API实现
+scaler = sp.StandardScaler()
+res = scaler.fit_transform(raw_sample)
+
+```
+
+#### 21.标准化和归一化的联系和区别
+```
+联系:
+    我们都知道归一化是指normalization，标准化是指standardization，但根据wiki上对feature scaling方法的定义，standardization其实就是z-score normalization，也就是说标准化其实是归一化的一种，而一般情况下，我们会把z-score归一化称为标准化，把min-max归一化简称为归一化
+    目的：都是通过缩放和平移来实现数据映射，消除不同特征量纲的影响
+
+区别：
+    归一化通常将数据映射到[0, 1]或[-1, 1]区间，而标准化则将数据映射到均值为0，标准差为1的正态分布
+    归一化只受原样本数据中的极值影响，而标准化则受所有样本值的影响
+    归一化对异常值敏感，而标准化则对异常值鲁棒
 ```

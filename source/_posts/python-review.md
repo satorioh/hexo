@@ -673,6 +673,29 @@ print(my_find(str1, str2))
 
 ```
 
+##### （4）二分法查找
+```python
+"""
+使用二分法实现sqrt()函数，并返回整数部分
+"""
+
+
+def my_sqrt(x: int) -> int:
+    l, r, ans = 0, x, -1
+    while l <= r:
+        mid = (l + r) // 2
+        if mid * mid <= x:
+            ans = mid
+            l = mid + 1
+        else:
+            r = mid - 1
+    return ans
+
+
+print(my_sqrt(10))
+
+```
+
 ### 七、python面试题
 #### 1.Python 中的深拷贝和浅拷贝的区别并实现
 ```python
