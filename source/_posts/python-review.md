@@ -642,6 +642,21 @@ def fibo(n):
     else:
         return fibo(n-1) + fibo(n-2) 
 ```
+##### （3）青蛙跳台阶
+```python
+"""
+青蛙跳台阶，一次可以跳1层或2层，问跳上n级台阶，有多少种跳法？
+"""
+# 1 2 3 5 8 13 21 斐波那契数列
+
+def climb_stairs(n: int) -> int:
+    s = [1, 2]
+    if n <= 2:
+        return s[n - 1]
+    while len(s) < n:
+        s.append(s[-1] + s[-2])
+    return s[-1]
+```
 
 ##### （3）实现字符串的find方法
 ```python
