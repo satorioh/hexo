@@ -658,7 +658,7 @@ def climb_stairs(n: int) -> int:
     return s[-1]
 ```
 
-##### （3）实现字符串的find方法
+##### （4）实现字符串的find方法
 ```python
 """
 实现 find() 函数:
@@ -688,7 +688,7 @@ print(my_find(str1, str2))
 
 ```
 
-##### （4）二分法查找
+##### （5）二分法查找
 ```python
 """
 使用二分法实现sqrt()函数，并返回整数部分
@@ -706,9 +706,20 @@ def my_sqrt(x: int) -> int:
             r = mid - 1
     return ans
 
-
 print(my_sqrt(10))
 
+class Solution:
+    def guessNumber(self, n: int) -> int:
+        left, right = 1, n
+        while left < right:
+            mid = (left + right) // 2
+            if guess(mid) <= 0:
+                right = mid   # 答案在区间 [left, mid] 中
+            else:
+                left = mid + 1   # 答案在区间 [mid+1, right] 中
+        
+        # 此时有 left == right，区间缩为一个点，即为答案
+        return left
 ```
 
 ### 七、python面试题
