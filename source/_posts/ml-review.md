@@ -1513,3 +1513,29 @@ B为正样本，混淆矩阵如下：
 precision = TP / (TP + FP) = 200 / (200 + 100) = 2/3
 recall = TP / (TP + FN) = 200 / (200 + 200) = 1/2 = 0.5
 ```
+
+#### 122.Sigmoid函数的导数推导过程
+
+#### 123.深度学习中，实现上采样有哪些方法？
+```
+1.插值法：最近邻、双线性
+2.反卷积
+3.反池化
+4.转置卷积
+```
+
+#### 124.深度可分离卷积是什么？
+![普通卷积](../images/ml_review_original_conv.png)
+![深度卷积](../images/ml_review_depthwise_conv.png)
+![逐点卷积](../images/ml_review_pointwise_conv.png)
+```
+深度可分离卷积（Depthwise Separable Convolution）是一种卷积操作，它将标准卷积分解为两个独立的操作：深度卷积（Depthwise Convolution）和逐点卷积（Pointwise Convolution）。这种分解能够显著减少计算量和参数量，从而提高卷积神经网络的效率，特别适合移动端设备
+第一步：使用深度卷积，对每个输入通道分别进行卷积操作，而不是像标准卷积那样在所有输入通道上应用卷积核
+第二步：逐点卷积，使用1×1卷积核在所有深度卷积生成的特征图上进行卷积操作，以实现通道间的信息融合
+```
+
+#### 125.LSTM跟GRU的区别
+```
+1.结构：LSTM有三个门（forget，input，output），GRU只有两个门（update和reset）
+2.计算效率：LSTM参数更多，推理更慢，GRU参数少，推理更快
+```
