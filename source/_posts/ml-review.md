@@ -1297,40 +1297,40 @@ big_nearest = cv.resize(img, dst_size2, interpolation=cv.INTER_NEAREST)  # 最�
 big_linear = cv.resize(img, dst_size2, interpolation=cv.INTER_LINEAR)  # 双线性插值
 ```
 
-#### 101.对图像进行模糊平滑处理，可以使用哪些滤波方式？
+#### 101.对图像进行模糊平滑处理，可以使用哪些方式？
 ```
-1.均值滤波 (Mean Filtering)：通过用邻域内所有像素的平均值替换中心像素来进行平滑
-2.高斯滤波 (Gaussian Filtering)：会对邻域像素赋予不同的权重，距离中心像素越近的像素权重越大
-3.中值滤波 (Median Filtering)：使用邻域内像素的中值来替换中心像素，特别适用于去除椒盐噪声
+1.均值模糊 ：通过用邻域内所有像素的平均值替换中心像素来进行平滑
+2.高斯模糊 ：会对邻域像素赋予不同的权重，距离中心像素越近的像素权重越大
+3.中值模糊 ：使用邻域内像素的中值来替换中心像素，特别适用于去除椒盐噪声
 
 cv2代码实现：
-# 均值滤波
+# 均值模糊
 img_mean_blur = cv.blur(img, (5, 5))
 cv.imshow("img_mean_blur", img_mean_blur)
 
-# 高斯滤波
+# 高斯模糊
 # 第三个参数为高斯核在X方向的标准差
 img_gaussian_blur = cv.GaussianBlur(img, (5, 5), 3)
 cv.imshow("img_gaussian_blur", img_gaussian_blur)
 
-# 中值滤波
+# 中值模糊
 img_median_blur = cv.medianBlur(img, 5)
 cv.imshow("img_median_blur", img_median_blur)
 ```
 
-#### 102.对图像进行边沿增强，有哪些常用算子？
+#### 102.对图像进行边沿检测，有哪些常用算子？
 ```
-# 1.Sobel算子
+1.Sobel算子：基于一阶导数，简单高效
 # cv.CV_64F: 输出图像深度，本来应该设置为-1，但如果设成-1，可能会发生计算错误，所以通常先设置为精度更高的CV_64F
 # dx, dy: x和y方向的导数
 img_sobel = cv.Sobel(img, cv.CV_64F, 1, 1, ksize=5)
 cv.imshow("img_sobel", img_sobel)
 
-# 2.laplacian算子
+2.laplacian算子：基于二阶导数，无方向性、噪声敏感
 img_laplacian = cv.Laplacian(img, cv.CV_64F)
 cv.imshow("img_laplacian", img_laplacian)
 
-# 3.Canny算子
+3.Canny算子：综合了多种边缘检测技术的改进型算子，抗噪声、效果好
 img_canny = cv.Canny(img, 50, 150)  # 50和150是阈值
 cv.imshow("img_canny", img_canny)
 ```
@@ -1542,4 +1542,37 @@ recall = TP / (TP + FN) = 200 / (200 + 200) = 1/2 = 0.5
 ```
 1.结构：LSTM有三个门（forget，input，output），GRU只有两个门（update和reset）
 2.计算效率：LSTM参数更多，推理更慢，GRU参数少，推理更快
+```
+
+#### 126.什么是一维傅里叶变换？它在图像分析中有哪些作用？
+```
+一维傅里叶变换（1D Fourier Transform）是一种将一维信号从时域转换到频域的数学方法。它可以将一个信号分解为不同频率的正弦波和余弦波的叠加。
+在图像处理中，它能分离出图像高频部分和低频部分，从而实现边缘检测、图像去噪
+```
+
+#### 127.常用图像分割算法有哪些？各有什么优缺点？
+```
+1.FCN：又称全卷积网络，去掉了CNN中的全连接层。对输入图像进行层层卷积、上采样，预测出每个像素所属的类别
+2.U-Net：模型简单、高效、容易理解、容易定制，针对样本较少的情况也能有较好分割效果
+3.Mask RCNN：将Faster RCNN 上增加了FCN来产生定位和分割信息
+4.DeepLab系列：引入了空洞卷积，条件随机场，多尺度空洞卷积等策略，使得分割效果更好
+```
+
+#### 128.简单介绍几种常用的人脸检测算法
+```
+基于传统人脸检测算法：Haar级联人脸检测算法
+深度学习人脸检测算法：MTCNN、DeepFace、RetinaFace
+```
+
+#### 129.你知道哪些OCR中的文字识别模型和文字检测模型？
+```
+文字识别模型: CRNN+CTC
+文字检测模型: CTPN、SegLink、DB
+```
+
+#### 130.在图像处理中，滤波、模糊、去噪，这三者是什么关系？
+```
+滤波(Filtering)：是一个广泛的概念，指通过某种方式修改图像的像素值以达到特定目的，比如低通滤波可以平滑模糊图像，高通滤波可以锐化增强图像
+模糊 (Blurring)：一种滤波的具体应用，使用了低通滤波操作，可以平滑图像，达到去噪的效果，常见的模糊方法有均值模糊、高斯模糊、中值模糊
+去噪 (Denoising)：指从图像中去除噪声。去噪的方法有很多，滤波是其中一种，基于滤波的常见的去噪方法有均值滤波、中值滤波、高斯滤波
 ```
