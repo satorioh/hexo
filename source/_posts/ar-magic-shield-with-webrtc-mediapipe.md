@@ -268,7 +268,7 @@ await pc.setRemoteDescription(answer);
 ##### （13）建立p2p连接
 根据双方收集到的ice candidates，测试连通性，选择最优路径，建立p2p连接，这一步是协议自动完成的。
 
-整个流程可以用下图来表示：
+webrtc建立连接的整个流程，可以用下图来表示：
 ![signaling](../images/magic_shield_signaling.png)
 
 
@@ -335,7 +335,7 @@ MODEL_PATH = f"{Path(__file__).parent.parent}/model/hand_landmarker.task"
 SHIELD_1 = cv2.imread(f"{Path(__file__).parent.parent}/asserts/magic_circle_ccw.png", -1)
 SHIELD_2 = cv2.imread(f"{Path(__file__).parent.parent}/asserts/magic_circle_cw.png", -1)
 ```
-图片长这样：
+魔法盾的图片长这样：
 ![](../images/magic_shield_cw.png)
 ![](../images/magic_shield_ccw.png)
 #### 2.模型初始化
@@ -490,7 +490,7 @@ def transparent(self, shield_img, x, y, image, size=None):
 
     return original_image
 ```
-至此整个后处理过程完成。
+至此整个后处理过程完成，**完整代码可参考**：[前端](https://github.com/satorioh/next_web_ai) [后端](https://github.com/satorioh/next_web_ai_backend)
 
 ### 五、遇到的问题
 #### 1.ImportError: libGL.so.1: cannot open shared object file: No such file or directory
@@ -522,14 +522,16 @@ ice通信需要用到udp端口，一开始没有在防火墙上开启，开启�
 5.整体效果上，还可以用seg模型进行背景替换，比如换成卡玛泰姬或电影中的场景，会更逼真
 
 ### 七、思考
-因为自己不玩抖音小红书之类的，所以一开始对于这种华而不实的AR特效并不关注，以为cv只能在工业领域用到，倒是老婆的一句“这多好玩啊”让我如梦初醒，想想当初，很大程度上，自己也是因为能亲手做出各种好玩的页面效果而最终转行前端，现在回过头来看，初衷原来如此简单纯粹，好玩，也许才是真正源源不断的内在驱动力。
+因为自己不玩抖音小红书之类的，所以一开始对于这种华而不实的AR特效并不关注，以为cv只能在工业领域用到，倒是老婆的一句“这多好玩啊”让我如梦初醒，想想当初，很大程度上，自己也是因为能亲手做出各种好玩的页面效果而选择转行前端，现在回过头来看，初衷原来如此简单纯粹。好玩，也许才是真正源源不断的内在驱动力。
 
 
-参考
+参考文章：
 
 [WebRTC 协议介绍](https://developer.mozilla.org/zh-CN/docs/Web/API/WebRTC_API/Protocols)
 
 [WebRTC connectivity](https://developer.mozilla.org/zh-CN/docs/Web/API/WebRTC_API/Connectivity)
+
+[Codecs used by WebRTC](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/WebRTC_codecs)
 
 [WebRTC NAT Traversal Methods: A Case for Embedded TURN](https://www.liveswitch.io/blog/webrtc-nat-traversal-methods-a-case-for-embedded-turn)
 
@@ -538,3 +540,9 @@ ice通信需要用到udp端口，一开始没有在防火墙上开启，开启�
 [Add support for WebRTC Data Channel in Workers](https://github.com/w3c/webrtc-pc/issues/230)
 
 [Python 手部特征点检测指南](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/python?hl=zh-cn)
+
+[WEBRTC DATA CHANNELS](https://www.remcotukker.com/WebRTC-Data-Channels/)
+
+[WebRTC with Python & React: Building Real-Time Communication Applications](https://www.videosdk.live/developer-hub/webrtc/webrtc-python)
+
+[From Zero to Hero with WebRTC in JavaScript and Python in small snippets of code](https://medium.com/@iftimiealexandru/from-zero-to-hero-with-webrtc-in-javascript-and-python-in-small-snippets-of-code-part-1-1c4154d6ed9d)
