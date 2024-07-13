@@ -1,11 +1,14 @@
 ---
-title: 《也许你该找个人聊聊》部分金句摘录
+title: 《也许你该找个人聊聊》金句摘录
 date: 2024-06-08 16:08:59
 categories: 读书
 tags:
 - 读书
 permalink: golden-quotes-of-maybe-you-should-talk-to-someone
 ---
+![](../images/maybe_you_should_talk_to_someone.png)
+_作者: [美]洛莉·戈特利布_
+
 要心怀慈悲。
 
 你没法逃避痛苦，只能承认。
