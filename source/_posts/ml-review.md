@@ -1651,3 +1651,151 @@ ResNet旨在解决深层网络训练中的梯度消失问题。其核心思想�
 ```
 
 #### 138.简述yolov8网络结构
+
+#### 139.用python实现iou计算
+```python
+def intersection(box1,box2):
+    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
+    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
+    x1 = max(box1_x1,box2_x1)
+    y1 = max(box1_y1,box2_y1)
+    x2 = min(box1_x2,box2_x2)
+    y2 = min(box1_y2,box2_y2)
+    return (x2-x1)*(y2-y1)
+    
+def union(box1,box2):
+    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
+    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
+    box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
+    box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
+    return box1_area + box2_area - intersection(box1,box2)
+    
+def iou(box1,box2):
+    return intersection(box1,box2)/union(box1,box2)
+```
+
+#### 140.什么是NMS？并用python实现
+```
+预测结果中，可能多个预测结果间存在重叠部分，需要保留交并比（IoU）最大的、去掉非最大的预测结果，这就是非极大值抑制（Non-Maximum Suppression，简写作NMS）
+
+NMS的算法步骤如下：
+
+1.将所有框放入队列中
+2.先找到置信度最高的框（假设为A）
+3.将A放入结果数组中
+4.依次计算其他框与A的IoU值
+5.如果某个框（假设为B）的IoU大于给定阈值（比如0.7），则认为B和A框定的是同一个物体，删除B
+6.循环上述步骤，直到队列中没有框了
+```
+```python
+# NMS
+boxes.sort(key=lambda x: x[5], reverse=True)
+
+result = []
+
+while len(boxes)>0:
+    result.append(boxes[0])
+    boxes = [box for box in boxes if iou(box,boxes[0])<0.7]
+```
+
+#### 141.mAP值是如何计算的？
+```
+mAP（mean Average Precision）指的是平均精度均值，是用来评估目标检测算法性能的指标。它的计算方法如下：
+1.对于每个类别，将检测结果按照置信度从大到小排序。
+2.依次计算每个预测框的查准率和召回率，并绘制出查准率-召回率曲线。
+3.计算该类别下面积最大的查准率-召回率曲线下的面积作为该类别的AP（Average
+Precision）。
+4.对所有类别的AP求平均得到mAP。
+```
+
+#### 142.使用pytorch训练模型的完整流程
+1.create dataset
+```python
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+class KeypointsDataset(Dataset):
+    def __init__(self, img_dir, data_file):
+        self.img_dir = img_dir
+        with open(data_file, "r") as f:
+            self.data = json.load(f)
+        
+        self.transforms = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        img = cv2.imread(f"{self.img_dir}/{item['id']}.png")
+        h,w = img.shape[:2]
+
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = self.transforms(img)
+        kps = np.array(item['kps']).flatten()
+        kps = kps.astype(np.float32)
+
+        kps[::2] *= 224.0 / w # Adjust x coordinates
+        kps[1::2] *= 224.0 / h # Adjust y coordinates
+
+        return img, kps
+        
+train_dataset = KeypointsDataset("data/images","data/data_train.json")
+val_dataset = KeypointsDataset("data/images","data/data_val.json")
+
+train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=8, shuffle=True)
+```
+2.create model
+```python
+model = models.resnet50(pretrained=True)
+model.fc = torch.nn.Linear(model.fc.in_features, 14*2) # Replaces the last layer
+model = model.to(device)
+```
+3.train model
+```python
+criterion = torch.nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+
+epochs=20
+for epoch in range(epochs):
+    for i, (imgs,kps) in enumerate(train_loader):
+        imgs = imgs.to(device)
+        kps = kps.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(imgs)
+        loss = criterion(outputs, kps)
+        loss.backward()
+        optimizer.step()
+
+        if i % 10 == 0:
+            print(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
+```
+4.validate model
+```python
+model.eval()
+
+total_loss = 0
+
+with torch.no_grad():
+    for i, (imgs,kps) in enumerate(val_loader):
+        imgs = imgs.to(device)
+        kps = kps.to(device)
+        outputs = model(imgs)
+        
+        loss = criterion(outputs, kps)
+        total_loss += loss.item()
+
+        if i != 0 and i % 10 == 0:
+            average_loss = total_loss / i
+            print(f"val_iter {i}, val_avg_loss: {average_loss}")
+```
+5.save model
+```python
+torch.save(model.state_dict(), "keypoints_model.pth")
+```
