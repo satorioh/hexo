@@ -1799,3 +1799,9 @@ with torch.no_grad():
 ```python
 torch.save(model.state_dict(), "keypoints_model.pth")
 ```
+
+#### 143.什么是SIFT和HOG特征提取？
+```
+SIFT（尺度不变特征变换）：检测并描述图像中的局部特征点，具有尺度和旋转不变性。
+HOG（方向梯度直方图）：用于描述图像局部梯度方向分布，常用于行人检测。
+```
