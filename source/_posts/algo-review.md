@@ -969,3 +969,73 @@ def graph_dfs(graph: GraphAdjList, start_vet: Vertex) -> list[Vertex]:
     return res
 
 ```
+
+### 九、二分查找
+#### 1.基本查找
+```
+给定一个长度为n的数组 nums ，元素按从小到大的顺序排列且不重复。请查找并返回元素 target 在该数组中的索引。若数组不包含该元素，则返回-1
+```
+```python
+nums = [1, 3, 6, 8, 12, 15, 23, 26, 31, 35]
+target = 35
+
+
+def binary_search(nums: list[int], target: int) -> int:
+    i, j = 0, len(nums) - 1
+    while i <= j:
+        mid = (j + i) // 2
+        if nums[mid] < target:
+            i = mid + 1
+        elif nums[mid] > target:
+            j = mid - 1
+        else:
+            return mid
+    return -1
+```
+#### 2.二分查找插入点（无重复元素）
+```
+给定一个长度为n的有序数组 nums 和一个元素 target ，数组不存在重复元素。现将 target 插入数组 nums 中，并保持其有序性。若数组中已存在元素 target ，则插入到其左方。请返回插入后 target 在数组中的索引。
+```
+二分结束时一定有：
+i 指向首个大于 target 的元素，
+j 指向首个小于 target 的元素
+```python
+nums = [1, 3, 6, 8, 15, 23, 26, 31, 35]
+target = 12
+
+
+def binary_search_insert(nums: list[int], target: int) -> int:
+    """二分查找插入点（无重复元素）"""
+    i, j = 0, len(nums) - 1
+    while i <= j:
+        mid = (i + j) // 2
+        if nums[mid] < target:
+            i = mid + 1
+        elif nums[mid] > target:
+            j = mid - 1
+        else:
+            return mid  # 已存在target，index 就是 mid
+    return i  # 不存在target，index 是 i
+```
+#### 3.二分查找插入点（有重复元素）
+```
+在上一题的基础上，规定数组可能包含重复元素，其余不变。
+```
+当前情况下，循环结束时一定有：
+i 指向首个等于 target 的元素，
+j 指向首个小于 target 的元素
+```python
+def binary_search_insertion2(nums: list[int], target: int) -> int:
+    """二分查找插入点（存在重复元素）"""
+    i, j = 0, len(nums) - 1
+    while i <= j:
+        m = (i + j) // 2
+        if nums[m] < target:
+            i = m + 1
+        elif nums[m] > target:
+            j = m - 1
+        else:
+            j = m - 1  # 首个小于 target 的元素在区间 [i, m-1] 中
+    # 返回插入点 i
+    return i
+```
