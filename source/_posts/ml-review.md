@@ -169,7 +169,14 @@ L2正则化的效果是使模型的参数变得平滑，即相邻参数的值相
 smooth L1: 结合了L1和L2的特点
 ```
 
-#### ~~16.YOLOv8中的objectness loss是什么？~~
+#### 16.Loss Function、Cost Function 和 Objective Function 的区别
+```
+损失函数(Loss Function)通常是针对单个训练样本而言，给定一个模型输出y'和一个真实值y，损失函数输出一个实值损失 L = f(y,y')
+代价函数(Cost Function)通常是针对整个训练集（或者在使用 mini-batch gradient descent 时一个 mini-batch）的总损失 J = ∑f(y,y')
+目标函数(Objective Function)是一个更通用的术语，表示任意希望被优化的函数，用于机器学习领域和非机器学习领域（比如运筹优化）
+
+一句话总结三者的关系就是：A loss function is a part of a cost function which is a type of an objective function.
+```
 
 #### 17.什么是特征归一化？为什么要归一化？
 ```

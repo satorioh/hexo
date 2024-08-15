@@ -1022,3 +1022,33 @@ def find_num_right(nums, target):
 print(find_num_left_or_index(nums, target))
 print(find_num_right(nums, target + 0.5))
 ```
+### 十、其他
+#### 1.质数分解
+```
+输入一个正整数，按照从小到大的顺序输出它的所有质因子（重复的也要列举）（如180的质因子为2 2 3 3 5 ）
+```
+```python
+def prime_factors(n):
+    factors = []
+    # 处理2的因子
+    while n % 2 == 0:
+        factors.append(2)
+        n //= 2
+    # 处理3及以上的因子
+    for i in range(3, int(n ** 0.5) + 1, 2):
+        while n % i == 0:
+            factors.append(i)
+            n //= i
+    # 如果n本身是质数且大于2
+    if n > 2:
+        factors.append(n)
+    return factors
+
+
+# 输入一个正整数
+number = int(input("请输入一个正整数: "))
+# 获取并输出所有质因子
+result = prime_factors(number)
+print("质因子从小到大的顺序为:", " ".join(map(str, result)))
+
+```
