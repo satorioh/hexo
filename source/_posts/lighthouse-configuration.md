@@ -6,12 +6,12 @@ tags:
 - lighthouse
 permalink: lighthouse-configuration
 ---
-| OS/Package      | Version |
-|-----------------|---|
-| OS              | Centos 9 stream |
-| python(自带)      | 3.9.18 |
-| python(pyenv安装) | 3.10.14  |
-| redis           | 6.2.7  |
+| OS/Package      | Version             |
+|-----------------|---------------------|
+| OS              | Centos 8 / 9 stream |
+| python(自带)      | 3.6.8 / 3.9.18      |
+| python(pyenv安装) | 3.10.14             |
+| redis           | 5.0.3 / 6.2.7       |
 
 <!--more-->
 ### 一、环境依赖安装
@@ -66,6 +66,10 @@ pyenv global 3.10.14
 #### 1.安装pdm: [docs](https://pdm-project.org/en/latest/)
 ```shell
 curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+```
+添加pdm到.bashrc和.bash_profile:
+```shell
+export PATH=/root/.local/bin:$PATH
 ```
 
 #### 2.安装doppler: [docs](https://docs.doppler.com/docs/install-cli)
@@ -134,4 +138,16 @@ rename-command FLUSHALL b840fc02d52404542994115f59e41cb7be6c544
 rename-command EVAL b840fc02d52404542994115f59e41cb7be6c555
 rename-command DEBUG b840fc02d52404542994115f59e41cb7be6c566
 rename-command SHUTDOWN b840fc02d52404542994115f59e41cb7be6c77
+```
+
+### 四、遇到的问题
+#### 1.Failed to download metadata for repo 'appstream': Cannot download repomd.xml
+解决：[How To Fix Error Failed to download metadata for repo in CentOS 8](https://netshopisp.medium.com/how-to-fix-error-failed-to-download-metadata-for-repo-in-centos-8-89417658c8f7)
+```shell
+cd /etc/yum.repos.d/
+
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
+yum update -y
 ```
