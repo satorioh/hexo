@@ -78,3 +78,60 @@ sudo yum update && sudo yum install doppler
 ```shell
 doppler login
 ```
+
+#### 3.安装redis
+##### (1)安装server端
+```shell
+dnf install epel-release -y
+
+dnf -y install redis
+
+systemctl start redis.service
+systemctl enable redis.service
+systemctl is-enabled redis.service
+
+#查看版本
+redis-server --version
+#是否通
+redis-cli ping
+```
+
+##### (2)安装client端
+```shell
+sudo yum install -y gcc wget
+wget http://download.redis.io/redis-stable.tar.gz && tar xvzf redis-stable.tar.gz && cd redis-stable && make
+sudo cp src/redis-cli /usr/bin/
+```
+
+##### (3)安全配置
+配置文件：/etc/redis/redis.conf
+
+1.强密码设置
+```shell
+# 生成requirepass
+echo "xxxxxxxxxxxx" | sha256sum
+```
+2.只允许本地访问
+```shell
+bind 127.0.0.1 -::1
+
+protected-mode yes
+```
+3.修改端口号
+```shell
+port xxx
+```
+4.maxmemory设置
+```shell
+maxmemory 512MB
+```
+5.重命名特殊指令
+```shell
+# `FLUSHDB, FLUSHALL, KEYS, PEXPIRE, DEL, CONFIG, SHUTDOWN, BGREWRITEAOF, BGSAVE, SAVE, SPOP, SREM, RENAME, DEBUG, EVAL`
+rename-command CONFIG b840fc02d52404542994115f59e41cb7be6c522
+rename-command FLUSHDB b840fc02d52404542994115f59e41cb7be6c533
+rename-command FLUSHALL b840fc02d52404542994115f59e41cb7be6c544
+rename-command EVAL b840fc02d52404542994115f59e41cb7be6c555
+rename-command DEBUG b840fc02d52404542994115f59e41cb7be6c566
+rename-command SHUTDOWN b840fc02d52404542994115f59e41cb7be6c77
+```

@@ -104,7 +104,7 @@ sudo cp src/redis-cli /usr/bin/
 ##### (1)强密码设置
 ```shell
 # 生成requirepass
-echo "hfT3dej%Avf498@ikl0" | sha256sum
+echo "xxxxxxxxxxxxxx" | sha256sum
 ```
 
 ##### (2)只允许本地访问
