@@ -671,3 +671,7 @@ x = keras.applications.vgg16.preprocess_input(x)
 其实，《Python深度学习》中还介绍了对预训练模型的fine tune，但是考虑到data augmentation + vgg16的accuracy已经到1.0了，就没有再尝试。
 
 多实践多总结，相信“日拱一卒，功不唐捐”
+
+> 版权声明：本文为博主原创文章，转载请注明作者和出处
+> 作者：CV肉饼王
+> 链接：https://roubin.me/fruit-classification-model-optimization-exercise/
