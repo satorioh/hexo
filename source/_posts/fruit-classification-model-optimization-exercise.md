@@ -18,7 +18,7 @@ permalink: fruit-classification-model-optimization-exercise
 数据集：爬虫从百度图片搜索结果爬取的，包含1036张水果图片，共5个类别（苹果288张、香蕉275张、葡萄216张、橙子276张、梨251张），分类较为均衡
 <!--more-->
 数据文件夹结构，如下图：
-![folder.png](../images/folder.png)
+![folder.png](https://roubin.me/images/folder.png)
 
 ### 二、实验过程
 #### 1.数据准备
@@ -51,7 +51,7 @@ test_ds = validation_ds.skip(num_val_samples)
 
 #### 2.模型构建与训练
 ##### （1）构建
-![img.png](../images/model_net.png)
+![img.png](https://roubin.me/images/model_net.png)
 网络结构如上图，包含3个卷积池化组（用于图像特征提取、降维），并添加了Dropout层（正则化，防止过拟合，因为模型层数多，但相对的数据集并不大），然后是2个全连接层（对特征进行抽象整合，最后输出），构建代码如下：
 
 ```python
@@ -188,7 +188,7 @@ def show_history(history):
     
 show_history(history)
 ```
-![loss和accuracy曲线](../images/fruit_history_1.png)
+![loss和accuracy曲线](https://roubin.me/images/fruit_history_1.png)
 如上图，loss和accuracy都不错，也没有太大的过拟合，说明Dropout还是很有效的
 
 执行一下评估：
@@ -415,7 +415,7 @@ Epoch 50/50
 
 ```
 loss和accuracy曲线如下：
-![loss和accuracy曲线](../images/fruit_history_2.png)
+![loss和accuracy曲线](https://roubin.me/images/fruit_history_2.png)
 依旧没有明显的过拟合，然后30轮和50轮的精度差别其实并不大
 
 也来评估一下：
@@ -453,7 +453,7 @@ accuracy 0.95,f1分数也基本都达到了0.95，说明数据增强还是有效
 
 这里预训练模型选择了vgg16，它在ImageNet（该数据集包含超过1400万张属于1000个类别的图像）图像分类竞赛中取得了第二名，参数量大约为1.3亿
 ##### （1）原理
-![原理图](../images/fruit_pretrain_net.png)
+![原理图](https://roubin.me/images/fruit_pretrain_net.png)
 上图摘自《Python深度学习》，原理就是使用vgg16作为训练好的卷积基，然后将其冻结，防止在训练过程中，内部参数被改变；在其上添加我们自己的全连接层，作为新的分类器，然后开始训练
 
 ##### （2）获取卷积基
@@ -496,7 +496,7 @@ print("This is the number of trainable weights "
   model = keras.Model(inputs=inputs, outputs=outputs)
 ```
 使用vgg16对输入数据格式有要求，可以调用`keras.applications.vgg16.preprocess_input`来处理，tf官方也给出了说明（如下图）
-![vgg16 input说明](../images/vgg16_input.png)
+![vgg16 input说明](https://roubin.me/images/vgg16_input.png)
 
 ##### （5）训练与评估
 ```python
@@ -611,7 +611,7 @@ Epoch 50/50
 
 ```
 loss和accuracy曲线：
-![loss和accuracy曲线](../images/fruit_history_3.png)
+![loss和accuracy曲线](https://roubin.me/images/fruit_history_3.png)
 绝了，一个顶天一个立地（哈哈～），希望有生之年还能见到这样美妙的情景
 
 最后，加载一下最佳模型，执行预测：
