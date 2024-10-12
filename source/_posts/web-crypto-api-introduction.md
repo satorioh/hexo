@@ -9,7 +9,7 @@ permalink: web-crypto-api-introduction
 ### 一、密码学家的工具箱
 在密码学中，有一个著名的说法，叫“密码学家的工具箱”，指的是密码学中常用的6种技术：对称密码、公钥密码、单向散列函数、消息认证码、数字签名、伪随机数生成器。它们在信息安全中发挥着重要的作用，我们可以用下图来表示各项技术与其解决的问题之间的关系：
 <!--more-->
-![密码学家的工具箱](../images/crypto-box.png)
+![密码学家的工具箱](https://roubin.me/images/crypto-box.png)
 随着近些年来Web标准的突飞猛进，新增的[Web Crypto API](https://developer.mozilla.org/zh-CN/docs/Web/API/SubtleCrypto)，就很好地实现了上述几种技术，它提供了常用算法的加密/解密/签名/验证/摘要/key生成/协商等操作，并统一采用Promise来处理异步逻辑，为密码学在Web端的实现，提供了较为标准的支持。
 
 今天我们就来尝试下，使用Web Crypto API简单实现一个“密码学家的工具箱”
@@ -17,7 +17,7 @@ permalink: web-crypto-api-introduction
 ### 二、开工之前
 #### 1.浏览器兼容性
 由于是新特性，我们需要先查看下[浏览器兼容性](https://caniuse.com/#feat=cryptography)，来决定是否使用，如下图：
-![浏览器兼容性](../images/crypto-caniuse.png)
+![浏览器兼容性](https://roubin.me/images/crypto-caniuse.png)
 2个值得留意的问题是：
 - 需要IE11及以上才支持
 - 由于是安全相关的API，Chrome要求在HTTPS下才能使用
@@ -271,7 +271,7 @@ console.log(plainText); // An obscure body in the S-K System, your majesty. The 
 
 #### 6.[数字签名](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign)
 消息认证码的局限性在于不能防否认，因为它使用了共享密钥，而配合公钥加密，数字签名就可以解决这个问题，流程如下图：
-![](../images/crypto-box-sign.png)
+![](https://roubin.me/images/crypto-box-sign.png)
 我们可以通过crypto.subtle.sign()和verify()方法实现
 
 **语法：**
@@ -346,6 +346,10 @@ console.log(result); // true
 由于Web加密标准还在演进中，各浏览器对标准的支持各不相同，大家还是需要根据实际项目需求来取舍。除了文中谈到的，Web Crypto API还有一些其他方法，感兴趣的同学可以从[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/SubtleCrypto)了解更多。
 
 由于文章中涉及的知识点较多，本人阅读材料有限，行文中难免疏漏，还望大家不吝指正。
+
+> 版权声明：本文为博主原创文章，转载请注明作者和出处
+> 作者：CV肉饼王
+> 链接：https://roubin.me/web-crypto-api-introduction/
 
 参考文章：
 
