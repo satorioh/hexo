@@ -11,7 +11,7 @@ permalink: object-detection-faster-rcnn
 
 ## 一、目标检测与Faster R-CNN
 目标检测与图像分类同属于计算机视觉（CV）范畴，但前者较后者在难度和复杂度层面又上了一个台阶，因为目标检测不光需要解决“是什么”（分类）的问题，还需要解决“在哪儿”（定位）的问题。
-![目标检测](../images/od_example.png)
+![目标检测](https://roubin.me/images/od_example.png)
 <!--more-->
 ### 1.目标检测算法分类
 基于深度学习的目标检测算法，主要分为两种：one-stage算法和two-stage算法。one-stage（一阶段）算法是在获取的图像特征上直接做分类+回归（定位），而two-stage（两阶段）算法则多了一步：获取图像特征，生成Region Proposal（候选区），再进行分类+回归（定位）
@@ -21,7 +21,7 @@ Faster R-CNN是由Ross B.Girshick在2016年提出的，做为two-stage算法的�
 
 ## 二、Faster R-CNN原理详解
 ### 1.网络结构
-![网络结构](../images/fastrcnn_net.png)
+![网络结构](https://roubin.me/images/fastrcnn_net.png)
 如上图，Faster R-CNN网络主要由五部分组成：
 - Input(输入): 对于输入的图像，首先需要缩放至固定大小MxN，然后再将MxN图像送入网络。虽然Faster R-CNN本身并不限制输入图像的大小，但是在实际训练过程中，太大的图像容易撑爆内存
 - Backbone(主干网络)：也有叫它Extractor的。主要为Conv layers（卷积层），来提取图像特征（feature maps），用于后续的RPN层和全连接层。此处可以使用ZF/vgg/Resnet/MobileNet等。以vgg16为例，包含了13个conv层+13个relu层+4个pooling层
@@ -58,11 +58,11 @@ RPN用于提供候选区域，它其实也是一个神经网络，有自己的lo
 在一幅图像中，要检测的目标可能出现在图像的任意位置，并且目标可能是任意的大小和任意形状，为了尽可能的框出目标可能出现的位置，预定义边框通常有上千个甚至更多
 
 Anchor Box的生成是以Backbone最后生成的feature Map上的点为中心的（可以映射回原图），以vgg16为例，使用vgg对输入的图像下采样了16倍，也就是Feature Map上的一个点对应于输入图像上的一个16×16的正方形区域（感受野）。根据预定义的Anchor，Feature Map上的一点为中心，就可以在原图上生成9种不同形状不同大小的边框，如下图：
-![anchor to feature map](../images/anchor_feature_map.png)
+![anchor to feature map](https://roubin.me/images/anchor_feature_map.png)
 
 作者论文中用到的anchor有三种尺寸(scale)和三种比例(ratio)，如下图所示，三种尺寸分别是小（蓝128）中（红256）大（绿512），三个比例分别是1:1，1:2，2:1。3×3的组合总共有9种anchor。
 
-![anchor](../images/fastrcnn_anchor.png)
+![anchor](https://roubin.me/images/fastrcnn_anchor.png)
 
 例如，一张800x600的原始图片，经过vgg下采样后(生成特征矩阵)16倍大小，大小变为50*38，每个点设置9个anchor，则总数为:
 ```python
@@ -71,7 +71,7 @@ ceil(800/16) * cei1(600/16) * 9 = 50*38*9 = 17100
 本质上，scale是用来表示目标的大小，ratio是用来表示目标的形状
 
 #### (2)网络结构
-![RPN网络](../images/fastrcnn_rpn.png)
+![RPN网络](https://roubin.me/images/fastrcnn_rpn.png)
 结合上面两张图，可以看到RPN网络实际分为2条线，上面一条通过softmax分类anchors获得positive和negative分类，下面一条用于计算对于anchors的bounding box regression偏移量，以获得精确的proposal。
 
 #### (3)流程步骤
@@ -93,8 +93,8 @@ ceil(800/16) * cei1(600/16) * 9 = 50*38*9 = 17100
 ##### d.获取bounding box coordinates
 在RPN网络图的下路，通过1x1的卷积，生成了一个包含4k（默认k=9的话，就是4x9=36）个coordinates（dx, dy, dw, dh, 相对于真实物体框的偏移）的特征向量，并结合上路分类获取的2k个score(如下图)，一起进入到最后的Proposal Layer
 
-  ![RPN中的anchor box](../images/fastrcnn_rpn_anchor.png)
-![RPN中的分类与回归](../images/fasterrcnn_rpn_cls_rpn.png)
+  ![RPN中的anchor box](https://roubin.me/images/fastrcnn_rpn_anchor.png)
+![RPN中的分类与回归](https://roubin.me/images/fasterrcnn_rpn_cls_rpn.png)
 
 ##### e.Proposal Layer
 Proposal Layer负责综合所有coordinates(dx, dy, dw, dh)变换量和positive anchors，计算出精准的proposal，送入后续RoI Pooling Layer
@@ -106,21 +106,21 @@ Proposal Layer负责综合所有coordinates(dx, dy, dw, dh)变换量和positive 
 - feature_stride：Backbone中下采样的倍数。以vgg16为例，4个pooling层，每经过一个pooling，图像尺寸变为原来的1/2，所以feature_stride=16
 
 该层的流程如下图 (摘自《深度学习之PyTorch物体检测实战》)：
-![Proposal Layer流程](../images/fasterrcnn_rpn_prop_layer.png)
+![Proposal Layer流程](https://roubin.me/images/fasterrcnn_rpn_prop_layer.png)
 
 首先生成大小固定的全部Anchors，然后将网络中得到的回归偏移作用到Anchor上使Anchor更加贴近于真值，并修剪超出图像尺寸的Proposal，得到最初的RoIs（region of interests）。在这之后，按照分类网络输出的得分对RoIs排序，保留前12000个得分高的RoIs。由于一个物体可能会有多个RoIs重叠对应，因此再应用非极大值抑制（NMS）将重叠的框去掉，最后在剩余的RoIs中再次根据RPN的预测得分选择前2000个，作为最终的RoIsl，输出到下一个阶段。
 
 其中，对于anchor box的回归（定位）偏移调整又是如何实现的呢？这里偷个懒，直接贴一篇大神的解释：[Fast R-CNN中的边框回归](https://www.cnblogs.com/wangguchangqing/p/10393934.html)，讲的很详细
 
 那NMS去掉重叠框又是怎么操作的呢？具体过程如下图：
-![NMS](../images/nms.png)
+![NMS](https://roubin.me/images/nms.png)
 假设有A和B两个框，A的score是0.98，B的score是0.86，计算AB的IoU，如果IoU大于阈值（比如0.5），则认为AB是同一个物体，然后删除score较小的B，以此循环来去掉重叠的框
 
 RPN网络结构就介绍到这里，总结起来就是：
 **生成anchors -> softmax分类器提取positvie anchors -> bbox reg回归修正positive anchors -> Proposal Layer生成RoIs**
 
 ### 5.RoI Pooling
-![网络结构](../images/fastrcnn_net.png)
+![网络结构](https://roubin.me/images/fastrcnn_net.png)
 该部分负责收集RoIs，并在原始的feature map上截取出proposal feature maps，送入后续网络。从上图中可以看到Rol pooling层有2个输入：
 - 原始的feature maps
 - RPN输出的RoIs
@@ -136,28 +136,28 @@ RPN网络结构就介绍到这里，总结起来就是：
 
 
   这样处理后，即使大小不同的RoI，输出结果都是 pool_w*pool_h 固定大小，实现了固定长度输出
-![RoI Pooling](../images/fasterrcnn_roi_pooling.png)
+![RoI Pooling](https://roubin.me/images/fasterrcnn_roi_pooling.png)
 RoI Pooling是一种特殊的Pooling操作，假设给定一张图片的feature map(512×H/16×W/16) ，和128个候选区域的座标（128×4），RoI Pooling将这些区域统一下采样到（512×7×7），就得到了128×512×7×7的向量。可以看成是一个batch-size=128，通道数为512，7×7的feature map 
 #### (3)为什么要pooling成7×7的尺度？
   是为了能够共享权重。看下vgg网络结构图（如下），Faster R-CNN除了用到vgg前几层的卷积之外，最后的全连接层也可以继续利用。当所有的RoIs都被pooling成（512×7×7）的feature map后，将它reshape 成一个一维的向量，就可以利用vgg16预训练的权重，初始化前两层全连接
-![vgg](../images/vgg.png)
+![vgg](https://roubin.me/images/vgg.png)
 
 ### 6.RoI Head
-![RoI Head](../images/fasterrcnn_roi_head.png)
+![RoI Head](https://roubin.me/images/fasterrcnn_roi_head.png)
 该部分网络结构如上图，利用已经获得的proposal feature maps，通过全连接层与softmax计算每个RoI具体属于哪个类别（人、车、电视等），输出cls_prob概率向量（这里有21个值，即20个类别+1个背景）；同时再次利用bounding box regression获得每个proposal的位置偏移量bbox_pred（这里有84个值，21个类 x 每个类有4个位置参数），用于回归更加精确的目标检测框
 
 ### 7.损失函数
 Faster R-CNN的loss由两部分组成：RPN的loss + RoI Head中的loss构成，而这两部分中，每一个部分的loss又都是由分类loss + 回归loss组成。以RPN为例，如下图：
-![RPN loss](../images/rpn_loss_all.png)
+![RPN loss](https://roubin.me/images/rpn_loss_all.png)
 
 其中分类损失部分，使用多分类交叉熵，如下图：
-![RPN softmax loss](../images/rpn_loss_cls_softmax.png)
+![RPN softmax loss](https://roubin.me/images/rpn_loss_cls_softmax.png)
 
 也可以使用sigmoid实现，即二分类交叉熵，如下图：
-![RPN sigmoid loss](../images/rpn_loss_cls_sigmoid.png)
+![RPN sigmoid loss](https://roubin.me/images/rpn_loss_cls_sigmoid.png)
 
 回归损失部分，使用smooth L1函数，如下图：
-![RPN reg loss](../images/rpn_loss_reg.png)
+![RPN reg loss](https://roubin.me/images/rpn_loss_reg.png)
 
 关于smooth L1可以参考这篇文章：[回归损失函数1：L1 loss, L2 loss以及Smooth L1 Loss的对比](https://www.cnblogs.com/wangguchangqing/p/12021638.html)
 
@@ -184,7 +184,6 @@ Faster R-CNN的loss由两部分组成：RPN的loss + RoI Head中的loss构成，
 四个损失相加作为最后的损失，反向传播，更新参数
 
 
-
 参考文章：
 
 [一文读懂Faster RCNN](https://zhuanlan.zhihu.com/p/31426458)
@@ -202,3 +201,5 @@ Faster R-CNN的loss由两部分组成：RPN的loss + RoI Head中的loss构成，
 [Faster R-CNN理论合集](https://www.bilibili.com/video/BV1af4y1m7iL/)
 
 [原始论文](https://arxiv.org/abs/1506.01497)
+
+> 部分图文来源于网络，如有侵权，请联系删除
