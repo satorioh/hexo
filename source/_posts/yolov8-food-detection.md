@@ -20,15 +20,15 @@ permalink: yolov8-food-detection
 - 商业领域：直播检测、商品检测、文本检测
 - 医学领域：细胞检测、病灶检测
 
-![Conveyor Belt Packets Counting](../images/yolov8_package_counting.gif)
+![Conveyor Belt Packets Counting](https://roubin.me/images/yolov8_package_counting.gif)
 
-![Fish Counting in Sea](../images/yolov8_fish_counting.gif)
+![Fish Counting in Sea](https://roubin.me/images/yolov8_fish_counting.gif)
 
-![People Counting in Different Region](../images/yolov8_people_counting.gif)
+![People Counting in Different Region](https://roubin.me/images/yolov8_people_counting.gif)
 
-![Speed Estimation on Road](../images/yolov8_speed_estimate.png)
+![Speed Estimation on Road](https://roubin.me/images/yolov8_speed_estimate.png)
 
-![car scratch detection](../images/yolov8_car_scratch.png)
+![car scratch detection](https://roubin.me/images/yolov8_car_scratch.png)
 
 ### 二、项目描述
 #### 1.任务描述
@@ -36,10 +36,10 @@ permalink: yolov8-food-detection
 - 使用 W&B sweep 进行 hyperparameter tune（超参数调优），来进一步优化模型性能
 
 #### 2.数据集
-![](../images/yolov8_data_preview.png)
+![](https://roubin.me/images/yolov8_data_preview.png)
 使用的数据集来源于 [UNIMIB2016 Food Database](http://www.ivl.disco.unimib.it/activities/food-recognition/)，数据集在一家真实的意大利餐厅中收集而来，每张照片的尺寸为 (3264, 2448)，包含一个托盘和托盘上不同的食物。
 
-![](../images/yolov8_data_category.png)
+![](https://roubin.me/images/yolov8_data_category.png)
 一共有1027张照片，共计73种菜品，总计3616个菜品实例。一些种类的食物只是在成分上有所不同，所以命名为“FoodName 1”, “FoodName 2”。
 
 因为菜品原文是意大利语，我用AI对其进行了翻译，大致中文译名如下：
@@ -291,10 +291,10 @@ if __name__ == '__main__':
 
 ```
 上述代码实际已经包含了修复图片和label的功能。因为实际检查中会发现有21个label找不到对应的image（如下图）
-![](../images/yolov8_data_mismatch.png)
+![](https://roubin.me/images/yolov8_data_mismatch.png)
 
 但仔细观察，这21张图片只是文件名后面多了个(0)，将(0)去掉后，与对应label一起显示出来，会发现数据是正常的（中间还遇到了EXIF的问题，具体过程后面再说）
-![](../images/yolov8_data_issue.png)
+![](https://roubin.me/images/yolov8_data_issue.png)
 
 除了上述21张图片名有问题外，还有一个label有异常，它的格式如下：
 ```shell
@@ -340,13 +340,13 @@ cv2.destroyAllWindows()
 
 ```
 显示出来发现label和菜品对不上，但仔细观察发现，似乎把图片旋转一下就能对上了
-![label错位](../images/yolov8_exif_1.png)
+![label错位](https://roubin.me/images/yolov8_exif_1.png)
 
 在查阅了一些[资料](https://blog.csdn.net/IYXUAN/article/details/124427316)后，知道是EXIF信息造成的问题。简单来说，EXIF 信息就是由数码相机在拍摄过程中采集一系列的信息，然后把信息放置在我们熟知的 JPEG/TIFF 文件的头部，也就是说 Exif信息是镶嵌在 JPEG/TIFF 图像文件格式内的一组拍摄参数（如下图）
-![](../images/yolov8_exif_2.png)
+![](https://roubin.me/images/yolov8_exif_2.png)
 
 其中的EXIF Orientation tag（EXIF方向参数）让你随便怎么照，在电脑上都可以看到正确方向的照片，而无需手动旋转
-![](../images/yolov8_exif_3.png)
+![](https://roubin.me/images/yolov8_exif_3.png)
 
 在目标检测中，给数据集做标记的时候，是不关注图像的 EXIF Orientation tag，而图像本身是含有 EXIF Orientation tag 的，某些软件（比如cv2）在读取图片时，对其做了旋转，导致label和图片对不上，所以需要我们手动移除EXIF信息，代码如下：
 ```python
@@ -389,10 +389,10 @@ if __name__ == '__main__':
 ```
 
 移除后的图片没有了EXIF信息：
-![](../images/yolov8_exif_4.png)
+![](https://roubin.me/images/yolov8_exif_4.png)
 
 和label一起显示的效果，都对应上了：
-![](../images/yolov8_exif_match.png)
+![](https://roubin.me/images/yolov8_exif_match.png)
 
 #### 4.类别统计
 主要是看一下类别分布情况，编写代码如下：
@@ -430,12 +430,12 @@ if __name__ == '__main__':
 ```
 
 部分数据如下，发现类别存在分布不平衡的情况，对后续训练和检测效果会有一定影响
-![](../images/yolov8_category_num.png)
+![](https://roubin.me/images/yolov8_category_num.png)
 
 #### 5.label格式转换
 yolov8对label格式有一些要求，如下图：
-![](../images/yolov8_data_format1.png)
-![](../images/yolov8_data_format.png)
+![](https://roubin.me/images/yolov8_data_format1.png)
+![](https://roubin.me/images/yolov8_data_format.png)
 
 解释一下：
 - .txt中的每行代表一个物体
@@ -574,19 +574,19 @@ if __name__ == '__main__':
 - 将dataset下载到各算力平台的速度很快
 
 我在准备好dataset后，将它导入roboflow，然后整体浏览下label和图片是否正常：
-![](../images/yolov8_roboflow.png)
+![](https://roubin.me/images/yolov8_roboflow.png)
 至此，数据预处理基本就完成了。
 
 ### 四、数据集准备
 #### 1.YOLOv8 介绍
 [YOLOv8](https://github.com/ultralytics/ultralytics) 是YOLO系列目标检测算法的一个版本，由Ultralytics公司于2023年1月10日开源发布。它在YOLOv5的基础上进行了多项改进，在速度、精度和灵活性方面都取得了显著提升。
-![](../images/yolov8_intro.png)
+![](https://roubin.me/images/yolov8_intro.png)
 
 可用于图片分类、目标检测、图像分割、目标追踪、姿势估计
-![](../images/yolov8_task.png)
+![](https://roubin.me/images/yolov8_task.png)
 
 其中，用于目标检测的有5个模型（从n到x，模型参数量逐渐增大，mAP逐渐提升，但检测速度会变慢），它们都是基于COCO数据集训练的：
-![](../images/yolov8_models.png)
+![](https://roubin.me/images/yolov8_models.png)
 
 综合考量模型的准确度和速度，本次选用的pretrained model是YOLOv8s，搭配W&B记录过程中的数据和结果。
 
@@ -648,7 +648,7 @@ YOLOv8使用自定义dataset训练时，需要编写一个dataset描述文件（
 
 有如下两种目录组织方式：
 ##### （1）coco目录格式
-![](../images/yolov8_coco_dir.png)
+![](https://roubin.me/images/yolov8_coco_dir.png)
 
 根目录是datasets，下面有一个`coco`文件夹，`coco`文件夹下分别有2个子文件夹：`images` 文件夹直接存放所有图片数据，`labels` 文件夹直接存放图片对应的*.txt标记文件：
 ```shell
@@ -833,7 +833,7 @@ wandb.finish()
 ```
 
 结果如下：
-![](../images/yolov8_loss.png)
+![](https://roubin.me/images/yolov8_loss.png)
 
 #### 2.增加数据量
 考虑到dataset中有73个class，图片的数量相对来说并不多，所以重新对dataset做了划分，舍弃了测试集，按训练集：验证集 = 8:2比例来重新训练，增加数据量，同时增加epoch到50
@@ -841,7 +841,7 @@ wandb.finish()
 results = model.train(project="yolov8_food", data='./datasets/unimib2016.yaml', epochs=50, imgsz=640)
 ```
 和25epoch对比，各项指标均有所提升，但loss下降不明显，具体结果如下：
-![](../images/yolov8_data_aug.png)
+![](https://roubin.me/images/yolov8_data_aug.png)
 
 #### 3.超参数调优
 考虑使用W&B的sweep进行超参数调优，进一步提升模型性能。使用起来也很方便，参数结果有直观的分析和展示，notebook代码如下：
@@ -916,14 +916,14 @@ wandb.agent(sweep_id, function=main, count=40)
 
 ```
 以mAP50-90为评估指标，使用随机搜索，跑40组参数组合，每个组合跑8个epoch，用时大概3h，最终结果如下：
-![](../images/yolov8_hyper_tune.png)
+![](https://roubin.me/images/yolov8_hyper_tune.png)
 
 然后选取sweep-19的这组超参数，重新训练50个epoch，代码如下：
 ```python
 results = model.train(project="yolov8_food", data='./datasets/unimib2016.yaml', epochs=50, imgsz=640, batch=8, box=2.285159746664883, cls=0.5, copy_paste=0,degrees=7.264354980360233,dfl=1.2742635530219004,fliplr=0.46688928408226266,flipud=0.05092823462093257,hsv_h=0.015,hsv_s=0.7,hsv_v=0.4,lr0=0.0006620608428909274,lrf=0.01497033032001488,mixup=0.19795652459646865,momentum=0.6595923950852437,mosaic=1,nbs=64,optimizer="Adam",scale=0.5,translate=0.2671635746059477,warmup_bias_lr=0.1,warmup_epochs=3,warmup_momentum=0.8,weight_decay=0.0004662556589982582)
 ```
 和之前的25/50epoch对比，precision有小幅提升，loss下降更多，结果如下：
-![](../images/yolov8_final_compare.png)
+![](https://roubin.me/images/yolov8_final_compare.png)
 
 部分预测结果：
 ![](https://roubin.me/images/food_detection.jpg)
