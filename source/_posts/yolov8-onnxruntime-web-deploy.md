@@ -19,7 +19,7 @@ permalink: yolov8-onnxruntime-web-deploy
 - 针对CPU (wasm) execution provider的性能优化措施
 
 **最终效果：** 让模型在PC端浏览器中运行，通过调用端侧摄像头，实现了目标检测的功能。
-![demo](../images/rps_demo.png)
+![demo](https://roubin.me/images/rps_demo.png)
 
 **项目完整代码参考：**[这个仓库](https://github.com/satorioh/yolov8_onnx_js)
 
@@ -35,10 +35,10 @@ permalink: yolov8-onnxruntime-web-deploy
 ### 一、前期准备
 #### 1.数据集
 考虑到最终效果需要直观、清晰、易理解，这次选择了roboflow上的[石头剪刀布](https://universe.roboflow.com/roboflow-58fyf/rock-paper-scissors-sxsw)目标检测数据集：
-![rps_dataset_preview](../images/rps_dataset_preview.gif)
+![rps_dataset_preview](https://roubin.me/images/rps_dataset_preview.gif)
 
 roboflow官方已经对该数据集做了几个版本的迭代，并且添加了预处理和数据增强（如下图）
-![rps_dataset_desc](../images/rps_dataset_desc.png)
+![rps_dataset_desc](https://roubin.me/images/rps_dataset_desc.png)
 
 我下载的是[v14版本](https://universe.roboflow.com/roboflow-58fyf/rock-paper-scissors-sxsw/dataset/14)，包含3个类别（Rock、Paper、Scissors），7335张图片（训练集6445、验证集576、测试集304），图片尺寸统一reshape成了640x640，虽然图片数量很多，但每张只有几十kb，所以整个数据集也就238M。
 
@@ -60,7 +60,7 @@ results = model.train(project="yolov8_rps", data='./datasets/data.yaml', epochs=
 ```
 
 最终训练结果如下，除了mAP50-95低了点，其他都在90以上：
-![rps_train_result](../images/rps_train_result.png)
+![rps_train_result](https://roubin.me/images/rps_train_result.png)
 
 
 使用训练好的模型，跑一下视频推理（如下），效果还可以
@@ -155,7 +155,7 @@ Shape: [1, 3, 640, 640]
 ```
 输入为四维浮点数据，包含一张3通道（RGB）的图片，尺寸640x640，像下面这样：
 
-![rps_rgb_input](../images/rps_rgb_input.png)
+![rps_rgb_input](https://roubin.me/images/rps_rgb_input.png)
 
 以单张图片为例，使用PIL调整图片尺寸
 ```python
@@ -223,7 +223,7 @@ function prepare_input(img) {
 }
 ```
 此时拿到的data是一个一维数组，需要按下图做转换：
-![rps_js_rgb_array](../images/rps_js_rgb_array.png)
+![rps_js_rgb_array](https://roubin.me/images/rps_js_rgb_array.png)
 
 ```python
   const red = [],
@@ -306,12 +306,12 @@ for box in boxes:
     x1,y1,x2,y2,class_id,prob = box
     draw.rectangle((x1,y1,x2,y2),None,"#00ff00")
 ```
-![](../images/rps_test_output.png)
+![](https://roubin.me/images/rps_test_output.png)
 这时候就需要使用NMS算法做处理
 
 #### 2.IoU与NMS的实现
 IoU：可以使用IoU（Intersection over Union，交并比）来判断检测框定位的好坏。所谓交并比，是指预测边框与实际边框的交集和并集的比率，取值范围为0～1，越接近1越好
-![iou.png](../images/iou.png)
+![iou.png](https://roubin.me/images/iou.png)
 代码实现：
 ```python
 def intersection(box1,box2):
@@ -437,7 +437,7 @@ while (boxes.length > 0) {
 在浏览器上部署，用到的是`onnxruntime-web`这个library，它可以调用端侧的cpu(wasm)、webgl或webGPU来执行模型推理。我这里使用的是cpu来执行，因为兼容性比较好。
 
 onnx官方推荐把模型推理这部分代码，放到web worker中执行，因为是cpu密集型操作，可以有效防止阻塞主线程，具体参考[官方文档](https://onnxruntime.ai/docs/tutorials/web/performance-diagnosis.html)
-![rps_onnx_worker](../images/rps_onnx_worker.png)
+![rps_onnx_worker](https://roubin.me/images/rps_onnx_worker.png)
 
 worker.js的代码如下
 ```javascript
@@ -502,10 +502,10 @@ function draw_boxes(canvas, boxes) {
 ```
 
 刚开始运行，除了会加载模型文件（12.2M），还会加载一个wasm library（2.6M）作为backend来调用cpu资源
-![img.png](../images/rps_run_init.png)
+![img.png](https://roubin.me/images/rps_run_init.png)
 
 在我的 Mac M1 Chrome浏览器上，平均推理一次差不多要600ms（如下图）
-![rps_infer_600](../images/rps_infer_600.png)
+![rps_infer_600](https://roubin.me/images/rps_infer_600.png)
 
 后续主要从两个方向着手优化：
 - 减小模型文件尺寸，提升加载速度
@@ -528,16 +528,16 @@ model_quant = './rps_best_uint8.onnx'
 quantized_model = quantize_dynamic(model_fp32, model_quant, weight_type=QuantType.QUInt8)
 ```
 量化后的模型，大小从12.2M，减少到3.3M，体积减小了四分之一
-![rps_uint8](../images/rps_uint8.png)
+![rps_uint8](https://roubin.me/images/rps_uint8.png)
 
 #### 2.使用SIMD+多线程加速wasm backend
 SIMD 是 Single Instruction, Multiple Data 的缩写，指的是单指令多数据。SIMD 指令可以同时对多个数据进行操作，从而提高数据处理速度
 
 多线程可以有效利用多核CPU资源，从而提高性能
-![rps_simd_thread](../images/rps_simd_thread.png)
+![rps_simd_thread](https://roubin.me/images/rps_simd_thread.png)
 
 onnxruntime-web的SIMD是默认开启的，而多线程需要服务端返回COOP/COEP响应头，以在浏览器端启用跨域隔离（如下图），详情参考[这里](https://web.dev/articles/cross-origin-isolation-guide?hl=zh-cn)
-![rps_multi_thread](../images/rps_multi_thread.png)
+![rps_multi_thread](https://roubin.me/images/rps_multi_thread.png)
 
 由于我使用的vercel部署，直接在`vercel.json`中添加配置即可让vercel返回相关http头
 ```json
@@ -561,7 +561,7 @@ onnxruntime-web的SIMD是默认开启的，而多线程需要服务端返回COOP
 
 ```
 启用wasm多线程后，在PC端Chrome上的平均推理时间，从600ms左右减少到269ms
-![img.png](../images/rps_infer_300.png)
+![img.png](https://roubin.me/images/rps_infer_300.png)
 
 ### 八、有待改进的地方
 1.最新版onnx支持int4量化，可以进一步压缩模型体积，减少通过网络传输的数据量
@@ -574,6 +574,9 @@ onnxruntime-web的SIMD是默认开启的，而多线程需要服务端返回COOP
 
 5.可以尝试onnx以外的解决方案，也许会有更好的性能
 
+> 版权声明：本文为博主原创文章，转载请注明作者和出处
+> 作者：CV肉饼王
+> 链接：https://roubin.me/yolov8-onnxruntime-web-deploy/
 
 参考：
 
