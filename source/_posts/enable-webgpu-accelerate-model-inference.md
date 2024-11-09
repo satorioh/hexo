@@ -15,18 +15,18 @@ permalink: enable-webgpu-accelerate-model-inference
 ### 一、启用WebGPU后的效果
 #### 1.PC端
 先讲一下最终效果，PC端测试数据和结果如下：
-![tfjs_pc_data](../images/tfjs_pc_data.png)
-![tfjs_pc_chart](../images/tfjs_pc_chart.png)
+![tfjs_pc_data](https://roubin.me/images/tfjs_pc_data.png)
+![tfjs_pc_chart](https://roubin.me/images/tfjs_pc_chart.png)
 在我的Mac M1 Pro上，使用tensorflow.js实现的基于wasm(cpu) backend推理，平均速度可以达到150ms (4 threads)
-![tfjs_pc_wasm](../images/tfjs_pc_wasm.png)
+![tfjs_pc_wasm](https://roubin.me/images/tfjs_pc_wasm.png)
 
 而使用support WebGPU backend的Chrome和Edge，平均推理时间分别达到了30ms和23ms，如果按一秒30帧来计算，这个速度，可以满足普通视频的实时推理需求。
-![tfjs_pc_gpu](../images/tfjs_pc_gpu.png)
+![tfjs_pc_gpu](https://roubin.me/images/tfjs_pc_gpu.png)
 
 #### 2.mobile端
 mobile端测试数据和结果如下：
-![tfjs_mobile_data](../images/tfjs_mobile_data.png)
-![tfjs_mobile_chart](../images/tfjs_mobile_chart.png)
+![tfjs_mobile_data](https://roubin.me/images/tfjs_mobile_data.png)
+![tfjs_mobile_chart](https://roubin.me/images/tfjs_mobile_chart.png)
 mobile端受限于测试环境等因素，并没有在每个device上把浏览器逐个测全，但也能看到：主流设备在启用WebGPU后，有比较明显的推理速度提升，而在低端设备上，差异似乎不明显。 但总体来说，和之前使用onnxruntime的mobile端动辄1800～2000ms的速度对比，这版使用tensorflow.js的实现，整体上都快了很多
 
 ### 二、代码实现
@@ -59,7 +59,7 @@ model = YOLO('./rps_best.pt')
 model.export(format='tfjs')
 ```
 导出后的模型文件长下面这样：包含三个4M左右的权重文件，一个元数据文件，一个模型算子和层参数json文件
-![tfjs_export_model](../images/tfjs_export_model.png)
+![tfjs_export_model](https://roubin.me/images/tfjs_export_model.png)
 
 #### 2.将onnxruntime-web换成tensorflow.js
 其实改成tensorflow.js实现，代码需要调整的地方并不多，本质上就是把model infer的框架换一下，再调整一下preprocess和postprocess就好了
@@ -107,7 +107,7 @@ async function init() {
 
 ### 三、遇到的问题
 1.移动端浏览器目前对WebGPU的支持比较有限，主要还是Chrome和Edge为主
-![webgpu_caniuse](../images/tfjs_caniuse.png)
+![webgpu_caniuse](https://roubin.me/images/tfjs_caniuse.png)
 
 2.PC端FireFox和Safari，在使用wasm backend时，推理到280次左右时，有时会出现推理中断的情况，原因有待排查
 
@@ -128,6 +128,9 @@ async function init() {
 
 5.针对遇到的问题，代码还存在优化调整的空间
 
+> 版权声明：本文为博主原创文章，转载请注明作者和出处
+> 作者：CV肉饼王
+> 链接：https://roubin.me/yolov8-onnxruntime-web-deploy/
 
 参考：
 
