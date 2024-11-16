@@ -68,7 +68,7 @@ addEventListener("message", (event: MessageEvent<number>) => {
 #### 1.缓存模型文件
 IndexedDB 是一种浏览器内建的数据库，拥有比 localStorage 大得多的容量，还支持索引和事务，可用于离线数据的存储，并且浏览器的支持度也不错：
 
-![next_web_indexeddb](../images/next_web_indexeddb.png)
+![next_web_indexeddb](https://roubin.me/images/next_web_indexeddb.png)
 
 因为模型文件通常比较大，使用 IndexedDB 缓存到客户端，可以有效提升页面二次加载的速度。
 
@@ -84,7 +84,7 @@ const model = await tf.loadLayersModel(IDB_URL);
 ```
 
 保存后的模型数据如下图：`tensorflowjs`相当于一个db，其中包含2个table（model_info_store和models_store）
-![next_web_indexeddb_saved](../images/next_web_indexeddb_saved.png)
+![next_web_indexeddb_saved](https://roubin.me/images/next_web_indexeddb_saved.png)
 
 之后就可以通过如下代码，来判断本地是否已经保存了模型，从而避免重复下载
 ```javascript
@@ -153,20 +153,20 @@ async function isModelLatest(dateSaved: Date) {
 这里也算是因祸得福，之前看一些文章讲wasm backend在启用SIMD+multi threads后，性能要优于webgl backend，以及后续webgpu会逐步取代webgl，所以一直没太关注webgl
 
 但这次在整合Next.js时，我发现无法启用wasm backend的SIMD+multi threads，原因是根据 [tf official readme for JS Minification](https://github.com/tensorflow/tfjs/tree/master/tfjs-backend-wasm) 这一节的说明：在基于bundlers系统（webpack）打包压缩时，需要将terserPlugin中的`typeofs` compress option关闭，才能启用SIMD+multi threads，不然会报错（实际过程中我也遇到了）
-![wasm_limit](../images/next_web_wasm_limit.png)
+![wasm_limit](https://roubin.me/images/next_web_wasm_limit.png)
 
 但尴尬的是Next.js目前还不支持自定义terser option，详情: [Feature Request: Support for custom terser options](https://github.com/vercel/next.js/discussions/24275)，所以这次就使用了webgl backend，结果比预想要好的多（测试数据稍后附上）
 
 #### 2.针对 webgl backend 的内存管理
 在启用 webgl backend后，尝试运行，发现有内存泄露，浏览器给出了warning:`High memory usage in GPU: 1029.91 MB, most likely due to a memory leak`，查询[tf官方文档](https://www.tensorflow.org/js/guide/platform_environment?hl=zh-cn)得知对于webgl backend需要手动管理内存
-![memory_leak](../images/next_web_memory_leak.png)
+![memory_leak](https://roubin.me/images/next_web_memory_leak.png)
 
 在模型推理过程中，GPU memory中存放着tensor数据，可以通过`tf.memory()`来查看具体的tensor数量：
 ```javascript
 console.log("numTensors: " + tf.memory().numTensors);
 ```
 我分别打印了推理中和推理后的tensor数量（如下图），可以看到都在不断增长
-![memory_increas](../images/next_web_memory_increase.png)
+![memory_increas](https://roubin.me/images/next_web_memory_increase.png)
 
 tf官方提供了多种内存清理的方法，这里我用到的是`tf.tidy`和`tf.dispose`
 ##### （1）tf.tidy
@@ -183,10 +183,10 @@ return tf.tidy(() => {
     });
 ```
 这里存在的问题是：被`tf.tidy`包裹的代码，只能返回同步数据（如下图）
-![tf_tidy](../images/next_web_tf_tidy.png)
+![tf_tidy](https://roubin.me/images/next_web_tf_tidy.png)
 
 而同步数据在推理过程中，势必存在性能问题，虽然tensor数量被控制住了，但是浏览器给出了warning（如下图），提示使用async api
-![memory_sync](../images/next_web_memory_sync.png)
+![memory_sync](https://roubin.me/images/next_web_memory_sync.png)
 
 那如何针对异步数据，进行内存清理？这里可以结合使用`tf.dispose`
 ##### （2）tf.tidy + tf.dispose
@@ -217,11 +217,11 @@ addEventListener("message", async (event: MessageEvent) => {
 });
 ```
 推理中，使用`tf.tidy`包裹同步代码自动清理，推理后，使用`tf.dispose`手动清理，这样即保证了异步性能，又控制住了GPU内存（如下图）
-![memory_async](../images/next_web_memory_async.png)
+![memory_async](https://roubin.me/images/next_web_memory_async.png)
 
 ### 四、针对 webgl backend 的模型warm up
 测试中遇到的另一个问题是，在推理开始时，会有短暂的几秒延迟，之前使用webgpu并没有这样的现象，查询[tf官方文档](https://www.tensorflow.org/js/guide/platform_environment?hl=zh-cn)后得知webgl需要做model warm up（如下图）
-![model_warm_up](../images/next_web_model_warm_up.png)
+![model_warm_up](https://roubin.me/images/next_web_model_warm_up.png)
 warm up就是让模型“热热身”，再开始正式推理，实现代码如下：
 ```javascript
 function warmupModel(model: tf.GraphModel) {
@@ -239,12 +239,12 @@ function warmupModel(model: tf.GraphModel) {
 这次也顺带在PC和mobile上，测了下webgl backend的推理速度，结合之前webgpu和wasm的测试数据，汇总如下：
 
 PC端：
-![pc_data](../images/next_web_pc_data.png)
-![pc_chart](../images/next_web_pc_chart.png)
+![pc_data](https://roubin.me/images/next_web_pc_data.png)
+![pc_chart](https://roubin.me/images/next_web_pc_chart.png)
 
 mobile端：
-![mobile_data](../images/next_web_mobile_data.png)
-![mobile_chart](../images/next_web_mobile_chart.png)
+![mobile_data](https://roubin.me/images/next_web_mobile_data.png)
+![mobile_chart](https://roubin.me/images/next_web_mobile_chart.png)
 
 总体感觉就是：比wasm有优势，和webgpu差距其实并不大，在某些低端设备上还更快，而且考虑到浏览器兼容性，webgl会是更好的选择
 
@@ -254,6 +254,10 @@ mobile端：
 **完整代码：**[这里](https://github.com/satorioh/next_web_ai)
 
 **演示地址：**[Next Web ML](https://next.regulusai.top/)
+
+> 版权声明：本文为博主原创文章，转载请注明作者和出处
+> 作者：CV肉饼王
+> 链接：https://roubin.me/web-model-load-infer-optimization-summary/
 
 参考文章：
 
